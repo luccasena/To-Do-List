@@ -3,18 +3,15 @@ package lucca.github.io.todolist.models.EntityDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lucca.github.io.todolist.models.Entity.Label;
 
 import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class TaskDTO {
-    private Long id;
+@AllArgsConstructor
+@NoArgsConstructor
+public class CreateTaskRequest {
     private String title;
     private String description;
     private Boolean done;
-    private List<Label> labels; // -> Long porque iremos passar o ID das labels
-
+    private List<Long> labelIds;
 }

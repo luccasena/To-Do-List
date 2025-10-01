@@ -1,9 +1,14 @@
 package lucca.github.io.todolist.services;
 
 import lombok.RequiredArgsConstructor;
+import lucca.github.io.todolist.models.Entity.Label;
 import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.Entity.User;
+import lucca.github.io.todolist.models.EntityDTO.CreateTaskRequest;
+import lucca.github.io.todolist.models.EntityDTO.LabelDTO;
 import lucca.github.io.todolist.models.EntityDTO.TaskDTO;
+import lucca.github.io.todolist.models.EntityDTO.UserDTO;
+import lucca.github.io.todolist.repositories.LabelRepository;
 import lucca.github.io.todolist.repositories.TaskRepository;
 import lucca.github.io.todolist.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +24,8 @@ public class TaskServices {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final LabelRepository labelRepository;
+    private final LabelServices labelServices;
 
     // --------------------------------------------------
 
@@ -27,7 +34,7 @@ public class TaskServices {
     }
 
     public TaskDTO createTaskDTO(Task task){
-        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone());
+        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
     }
 
     // --------------------------------------------------
@@ -57,7 +64,7 @@ public class TaskServices {
 
     // --------------------------------------------------
 
-    public ResponseEntity<?> createTask(Long idUser, TaskDTO taskDTO){
+    public ResponseEntity<?> createTask(Long idUser, CreateTaskRequest taskDTO){
         Optional<User> foundUser = userRepository.findById(idUser);
 
         if(foundUser.isEmpty()){
@@ -65,7 +72,9 @@ public class TaskServices {
         }
         User user = foundUser.get();
 
-        Task task = new Task(user, taskDTO.getTitle(), taskDTO.getDescription(), taskDTO.getDone());
+        List<Label> labels = labelRepository.findAllById(taskDTO.getLabelIds());
+
+        Task task = new Task(user, taskDTO.getTitle(), taskDTO.getDescription(), taskDTO.getDone(), labels);
         taskRepository.save(task);
         return ResponseEntity.ok(task);
     }
