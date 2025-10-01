@@ -17,6 +17,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String lastname;
     private Integer age;
@@ -26,8 +27,7 @@ public class User {
     @JsonIgnore
     private String password;
 
-
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 
     public User(String name, String lastname, Integer age, String email, String password) {

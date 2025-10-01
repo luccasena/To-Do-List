@@ -23,13 +23,4 @@ public class UserDTO {
 
     private List<Task> tasks;
 
-    public UserDTO(Long id, String name, String lastname, Integer age, String email, String password) {
-        this.id = id;
-        this.name = name;
-        this.lastname = lastname;
-        this.age = age;
-        this.email = email;
-        this.password = password;
-    }
-
 }

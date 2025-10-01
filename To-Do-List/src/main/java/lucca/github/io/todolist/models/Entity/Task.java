@@ -1,10 +1,10 @@
 package lucca.github.io.todolist.models.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 
 @Entity
 @NoArgsConstructor
@@ -21,6 +21,7 @@ public class Task{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore()
     private User user;
 
     public Task(User user,String title, String description, Boolean done) {

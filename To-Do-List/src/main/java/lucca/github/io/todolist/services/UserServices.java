@@ -21,7 +21,7 @@ public class UserServices {
     // -------------------------------------------------------------------------------------
 
     public UserDTO createUserDTO(User user){
-        return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getPassword());
+        return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getPassword(), user.getTasks());
 
     }
 
@@ -53,9 +53,11 @@ public class UserServices {
 
     public ResponseEntity<?> deleteUser(Long id){
         Optional<User> user = userRepository.findById(id);
+
         if(user.isEmpty()){
             return ResponseEntity.notFound().build();
         }
+
         userRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -64,15 +66,19 @@ public class UserServices {
 
     public ResponseEntity<?> updateUser(Long id, UserDTO userDTO){
         Optional<User> foundUser = userRepository.findById(id);
+
         if(foundUser.isEmpty()){
             return ResponseEntity.notFound().build();
         }
+
         User user = foundUser.get();
+
         user.setName(userDTO.getName());
         user.setLastname(userDTO.getLastname());
         user.setAge(userDTO.getAge());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
+
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }
