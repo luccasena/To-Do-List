@@ -1,0 +1,81 @@
+package lucca.github.io.todolist.services;
+
+import lombok.RequiredArgsConstructor;
+import lucca.github.io.todolist.models.Entity.User;
+import lucca.github.io.todolist.models.EntityDTO.UserDTO;
+import lucca.github.io.todolist.repositories.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class UserServices {
+
+    private final UserRepository userRepository;
+
+    // -------------------------------------------------------------------------------------
+
+    public UserDTO createUserDTO(User user){
+        return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getPassword());
+
+    }
+
+    public Optional<User> findUserByID(Long id){
+        return userRepository.findById(id);
+    }
+
+    // -------------------------------------------------------------------------------------
+
+    public List<UserDTO> getAllUsers(){
+        List<User> users = userRepository.findAll();
+
+        List<UserDTO> userDTOs = new ArrayList<>();
+        for(User user : users){
+            UserDTO userDTO = createUserDTO(user);
+            userDTOs.add(userDTO);
+        }
+        return userDTOs;
+    }
+
+    // -------------------------------------------------------------------------------------
+
+    public void createUser(UserDTO userDTO){
+        User user = new User(userDTO.getName(), userDTO.getLastname(), userDTO.getAge(), userDTO.getEmail(), userDTO.getPassword());
+        userRepository.save(user);
+    }
+
+    // -------------------------------------------------------------------------------------
+
+    public ResponseEntity<?> deleteUser(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        userRepository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // -------------------------------------------------------------------------------------
+
+    public ResponseEntity<?> updateUser(Long id, UserDTO userDTO){
+        Optional<User> foundUser = userRepository.findById(id);
+        if(foundUser.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        User user = foundUser.get();
+        user.setName(userDTO.getName());
+        user.setLastname(userDTO.getLastname());
+        user.setAge(userDTO.getAge());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        userRepository.save(user);
+        return ResponseEntity.ok().build();
+    }
+
+
+}
