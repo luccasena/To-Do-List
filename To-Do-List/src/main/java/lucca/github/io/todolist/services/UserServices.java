@@ -45,7 +45,7 @@ public class UserServices {
     // -------------------------------------------------------------------------------------
 
     public void createUser(UserDTO userDTO){
-        User user = new User(userDTO.getName(), userDTO.getLastname(), userDTO.getAge(), userDTO.getEmail(), userDTO.getPassword());
+        User user = new User(userDTO.name(), userDTO.lastname(), userDTO.age(), userDTO.email(), userDTO.password());
         userRepository.save(user);
     }
 
@@ -73,11 +73,11 @@ public class UserServices {
 
         User user = foundUser.get();
 
-        user.setName(userDTO.getName());
-        user.setLastname(userDTO.getLastname());
-        user.setAge(userDTO.getAge());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setName(userDTO.name());
+        user.setLastname(userDTO.lastname());
+        user.setAge(userDTO.age());
+        user.setEmail(userDTO.email());
+        user.setPassword(userDTO.password());
 
         userRepository.save(user);
         return ResponseEntity.ok().build();

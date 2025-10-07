@@ -22,7 +22,7 @@ public class Task{
     private Boolean done;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable( name = "task_labels",
+    @JoinTable( name = "tasks_labels",
                 joinColumns = @JoinColumn(name = "task_id"),
                 inverseJoinColumns = @JoinColumn(name = "label_id"))
     private List<Label> labels;

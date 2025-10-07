@@ -1,8 +1,7 @@
 package lucca.github.io.todolist.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lucca.github.io.todolist.models.EntityDTO.CreateTaskRequest;
-import lucca.github.io.todolist.models.EntityDTO.LabelDTO;
+import lucca.github.io.todolist.models.EntityDTO.TaskCreateRequest;
 import lucca.github.io.todolist.models.EntityDTO.TaskDTO;
 import lucca.github.io.todolist.services.TaskServices;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,7 @@ public class TaskController {
     }
 
     @PostMapping("/{idUser}")
-    public ResponseEntity<?> createTask(@PathVariable Long idUser, @RequestBody CreateTaskRequest taskDTO){
+    public ResponseEntity<?> createTask(@PathVariable Long idUser, @RequestBody TaskCreateRequest taskDTO){
         taskServices.createTask(idUser,taskDTO);
         return ResponseEntity.ok().build();
     }

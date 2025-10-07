@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.Label;
 import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.Entity.User;
-import lucca.github.io.todolist.models.EntityDTO.CreateTaskRequest;
-import lucca.github.io.todolist.models.EntityDTO.LabelDTO;
+import lucca.github.io.todolist.models.EntityDTO.TaskCreateRequest;
 import lucca.github.io.todolist.models.EntityDTO.TaskDTO;
-import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.LabelRepository;
 import lucca.github.io.todolist.repositories.TaskRepository;
 import lucca.github.io.todolist.repositories.UserRepository;
@@ -25,7 +23,6 @@ public class TaskServices {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final LabelRepository labelRepository;
-    private final LabelServices labelServices;
 
     // --------------------------------------------------
 
@@ -64,7 +61,7 @@ public class TaskServices {
 
     // --------------------------------------------------
 
-    public ResponseEntity<?> createTask(Long idUser, CreateTaskRequest taskDTO){
+    public ResponseEntity<?> createTask(Long idUser, TaskCreateRequest taskDTO){
         Optional<User> foundUser = userRepository.findById(idUser);
 
         if(foundUser.isEmpty()){
@@ -72,9 +69,9 @@ public class TaskServices {
         }
         User user = foundUser.get();
 
-        List<Label> labels = labelRepository.findAllById(taskDTO.getLabelIds());
+        List<Label> labels = labelRepository.findAllById(taskDTO.labelIds());
 
-        Task task = new Task(user, taskDTO.getTitle(), taskDTO.getDescription(), taskDTO.getDone(), labels);
+        Task task = new Task(user, taskDTO.title(), taskDTO.description(), taskDTO.done(), labels);
         taskRepository.save(task);
         return ResponseEntity.ok(task);
     }
@@ -102,7 +99,7 @@ public class TaskServices {
         }
 
         Task task = foundTask.get();
-        task.setDone(taskDTO.getDone());
+        task.setDone(taskDTO.done());
         taskRepository.save(task);
 
         return ResponseEntity.ok().body("Task has been updated");

@@ -19,11 +19,11 @@ public class LabelServices {
     private final LabelRepository labelRepository;
 
     public LabelDTO createLabelDTO(LabelDTO labelDTO){
-        return new LabelDTO(labelDTO.getId(), labelDTO.getName(), labelDTO.getTasks());
+        return new LabelDTO(labelDTO.id(), labelDTO.name(), labelDTO.tasks());
     }
 
     public void createLabel(LabelDTO labelDTO){
-        Label label = new Label(labelDTO.getId(),labelDTO.getName(), labelDTO.getTasks());
+        Label label = new Label(labelDTO.id(),labelDTO.name(), labelDTO.tasks());
         labelRepository.save(label);
     }
 
