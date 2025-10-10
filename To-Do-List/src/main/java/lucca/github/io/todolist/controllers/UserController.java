@@ -27,12 +27,11 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
-        userServices.createUser(userDTO);
-        return ResponseEntity.ok().build();
+        return userServices.createUser(userDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userServices.deleteUser(id);
         return ResponseEntity.ok().build();
 

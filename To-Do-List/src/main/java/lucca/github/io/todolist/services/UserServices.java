@@ -34,7 +34,7 @@ public class UserServices {
         return ResponseEntity.ok().body(userDTO);
     }
 
-    public ResponseEntity<List<UserDTO>>  getAllUsers(){
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
         List<User> users = userRepository.findAll();
 
         if(users.isEmpty()){
@@ -50,24 +50,26 @@ public class UserServices {
         return ResponseEntity.ok().body(userDTOs);
     }
 
-    public void createUser(UserDTO userDTO){
+    public ResponseEntity<?> createUser(UserDTO userDTO){
         User user = new User(userDTO.name(), userDTO.lastname(), userDTO.age(), userDTO.email(), userDTO.password());
         userRepository.save(user);
+
+        return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> deleteUser(Long id){
-        Optional<User> user = userRepository.findById(id);
+    public ResponseEntity<?> deleteUser(Long idUser){
+        Optional<User> user = userRepository.findById(idUser);
 
         if(user.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        userRepository.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        userRepository.deleteById(idUser);
+        return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> updateUser(Long id, UserDTO userDTO){
-        Optional<User> foundUser = userRepository.findById(id);
+    public ResponseEntity<?> updateUser(Long idUser, UserDTO userDTO){
+        Optional<User> foundUser = userRepository.findById(idUser);
 
         if(foundUser.isEmpty()){
             return ResponseEntity.notFound().build();

@@ -17,6 +17,11 @@ public class DescriptionController {
 
     private final DescriptionServices descriptionServices;
 
+    @GetMapping("/{idDescription}")
+    public ResponseEntity<DescriptionDTO> getDescriptionById(@PathVariable Long idDescription){
+        return descriptionServices.findDescriptionById(idDescription);
+    }
+
     @GetMapping
     public ResponseEntity<List<DescriptionDTO>> getAllDescriptions(){
         return descriptionServices.findAllDescriptions();
@@ -28,7 +33,7 @@ public class DescriptionController {
         return ResponseEntity.ok().build();
 
     }
-    @DeleteMapping
+    @DeleteMapping("/{idDescription}")
     public ResponseEntity<?> deleteDescription(@PathVariable Long idDescription){
         descriptionServices.deleteDescription(idDescription);
         return ResponseEntity.ok().build();
