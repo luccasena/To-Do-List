@@ -1,6 +1,7 @@
 package lucca.github.io.todolist.controllers;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.services.UserServices;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO userDTO) {
         return userServices.createUser(userDTO);
     }
 
