@@ -18,38 +18,42 @@ public class UserServices {
 
     private final UserRepository userRepository;
 
-    // -------------------------------------------------------------------------------------
-
     public UserDTO createUserDTO(User user){
         return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getPassword(), user.getTasks());
 
     }
 
-    public Optional<User> findUserByID(Long id){
-        return userRepository.findById(id);
+    public ResponseEntity<UserDTO> findUserByID(Long id){
+        Optional<User> foundUser = userRepository.findById(id);
+
+        if(foundUser.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDTO userDTO = createUserDTO(foundUser.get());
+        return ResponseEntity.ok().body(userDTO);
     }
 
-    // -------------------------------------------------------------------------------------
-
-    public List<UserDTO> getAllUsers(){
+    public ResponseEntity<List<UserDTO>>  getAllUsers(){
         List<User> users = userRepository.findAll();
 
+        if(users.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
         List<UserDTO> userDTOs = new ArrayList<>();
+
         for(User user : users){
             UserDTO userDTO = createUserDTO(user);
             userDTOs.add(userDTO);
         }
-        return userDTOs;
+        return ResponseEntity.ok().body(userDTOs);
     }
-
-    // -------------------------------------------------------------------------------------
 
     public void createUser(UserDTO userDTO){
         User user = new User(userDTO.name(), userDTO.lastname(), userDTO.age(), userDTO.email(), userDTO.password());
         userRepository.save(user);
     }
-
-    // -------------------------------------------------------------------------------------
 
     public ResponseEntity<?> deleteUser(Long id){
         Optional<User> user = userRepository.findById(id);
@@ -61,8 +65,6 @@ public class UserServices {
         userRepository.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-    // -------------------------------------------------------------------------------------
 
     public ResponseEntity<?> updateUser(Long id, UserDTO userDTO){
         Optional<User> foundUser = userRepository.findById(id);
@@ -82,6 +84,5 @@ public class UserServices {
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }
-
 
 }

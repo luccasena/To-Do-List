@@ -15,14 +15,14 @@ import java.util.List;
 public class UserController {
     private final UserServices userServices;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userServices.findUserByID(id));
+    @GetMapping("/{idUser}")
+    public ResponseEntity<?> getUserById(@PathVariable Long idUser) {
+        return userServices.findUserByID(idUser);
     }
 
     @GetMapping
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-       return ResponseEntity.ok(userServices.getAllUsers());
+       return userServices.getAllUsers();
     }
 
     @PostMapping
