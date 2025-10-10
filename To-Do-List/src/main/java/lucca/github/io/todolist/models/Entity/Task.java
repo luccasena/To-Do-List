@@ -19,7 +19,7 @@ public class Task{
 
     private String title;
 
-    @OneToOne(mappedBy = "task")
+    @OneToOne(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     @PrimaryKeyJoinColumn
     @JsonIgnore()
     private Description description;
