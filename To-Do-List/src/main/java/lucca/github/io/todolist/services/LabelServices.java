@@ -56,13 +56,15 @@ public class LabelServices {
     }
 
     public ResponseEntity<?> deleteLabel(Long idLabel){
-        Optional<Label> label = labelRepository.findById(idLabel);
+        Optional<Label> foundLabel = labelRepository.findById(idLabel);
 
-        if(label.isEmpty()){
+        if(foundLabel.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        labelRepository.deleteById(idLabel);
+        Label label = foundLabel.get();
+        labelRepository.delete(label);
+
         return ResponseEntity.ok().build();
     }
 

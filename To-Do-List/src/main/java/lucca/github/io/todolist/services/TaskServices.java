@@ -28,8 +28,8 @@ public class TaskServices {
         return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
     }
 
-    public ResponseEntity<TaskDTO> findTaskByID(Long id){
-        Optional<Task> foundTask = taskRepository.findById(id);
+    public ResponseEntity<TaskDTO> findTaskByID(Long idTask){
+        Optional<Task> foundTask = taskRepository.findById(idTask);
 
         if(foundTask.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -76,8 +76,8 @@ public class TaskServices {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> deleteTask(Long id){
-        Optional<Task> taskOptional = taskRepository.findById(id);
+    public ResponseEntity<?> deleteTask(Long idTask){
+        Optional<Task> taskOptional = taskRepository.findById(idTask);
 
         if(taskOptional.isEmpty()){
             return ResponseEntity.notFound().build();
