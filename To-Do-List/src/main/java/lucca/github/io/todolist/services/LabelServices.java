@@ -22,12 +22,18 @@ public class LabelServices {
         return new LabelDTO(label.getId(), label.getName(), label.getTasks());
     }
 
-    public void createLabel(LabelDTO labelDTO){
-        Label label = new Label(labelDTO.name());
-        labelRepository.save(label);
+    public ResponseEntity<?> findLabelByID(Long idLabel){
+        Optional<Label> label = labelRepository.findById(idLabel);
+
+        if(label.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        LabelDTO labelDTO = createLabelDTO(label.get());
+        return ResponseEntity.ok().body(labelDTO);
     }
 
-    public ResponseEntity<List<LabelDTO>> getLabels(){
+    public ResponseEntity<List<LabelDTO>> getAllLabels(){
         List<Label> labels = labelRepository.findAll();
 
         if(labels.isEmpty()){
@@ -35,47 +41,43 @@ public class LabelServices {
         }
 
         List<LabelDTO> labelDTOs = new ArrayList<>();
+
         for(Label label : labels){
-            labelDTOs.add(createLabelDTO(label));
+            LabelDTO labelDTO = createLabelDTO(label);
+            labelDTOs.add(labelDTO);
         }
-        return ResponseEntity.ok(labelDTOs);
+
+        return ResponseEntity.ok().body(labelDTOs);
     }
 
-    public ResponseEntity<?> getLabelById(Long id){
-        Optional<Label> label = labelRepository.findById(id);
-
-        if(label.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(new LabelDTO(label.get().getId(),label.get().getName(),label.get().getTasks()));
+    public void createLabel(LabelDTO labelDTO){
+        Label label = new Label(labelDTO.name());
+        labelRepository.save(label);
     }
 
-    public ResponseEntity<?> deleteLabelById(Long id){
-        Optional<Label> label = labelRepository.findById(id);
+    public ResponseEntity<?> deleteLabel(Long idLabel){
+        Optional<Label> label = labelRepository.findById(idLabel);
 
         if(label.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
 
-        labelRepository.deleteById(id);
-
+        labelRepository.deleteById(idLabel);
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> updateLabel(LabelDTO labelDTO){
-        Optional<Label> foundLabel = labelRepository.findById(labelDTO.id());
+    public ResponseEntity<?> updateLabel(Long idLabel, LabelDTO labelDTO){
+        Optional<Label> foundLabel = labelRepository.findById(idLabel);
 
         if(foundLabel.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
 
         Label label = foundLabel.get();
 
-        label.setId(labelDTO.id());
         label.setName(labelDTO.name());
-        label.setTasks(labelDTO.tasks());
-        labelRepository.save(label);
 
+        labelRepository.save(label);
         return ResponseEntity.ok().build();
 
     }

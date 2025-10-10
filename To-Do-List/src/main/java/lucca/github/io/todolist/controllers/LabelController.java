@@ -16,14 +16,14 @@ public class LabelController {
 
     private final LabelServices labelServices;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getLabelById( @PathVariable Long idUser){
-        return ResponseEntity.ok().body(labelServices.getLabelById(idUser));
+    @GetMapping("/{idLabel}")
+    public ResponseEntity<?> getLabelById(@PathVariable Long idLabel){
+        return labelServices.findLabelByID(idLabel);
     }
 
     @GetMapping
     public ResponseEntity<List<LabelDTO>> getAllLabels(){
-        return labelServices.getLabels();
+        return labelServices.getAllLabels();
     }
 
     @PostMapping
@@ -32,15 +32,14 @@ public class LabelController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLabel(@PathVariable Long id){
-        labelServices.deleteLabelById(id);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{idLabel}")
+    public ResponseEntity<?> deleteLabel(@PathVariable Long idLabel){
+        return labelServices.deleteLabel(idLabel);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateLabel(@PathVariable Long id, @RequestBody LabelDTO labelDTO){
-        labelServices.updateLabel(labelDTO);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{idLabel}")
+    public ResponseEntity<?> updateLabel(@PathVariable Long idLabel, @RequestBody LabelDTO labelDTO){
+        return labelServices.updateLabel(idLabel, labelDTO);
     }
+
 }
