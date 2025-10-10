@@ -16,13 +16,13 @@ public class TaskController {
     private final TaskServices taskServices;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> returnTaskById(Long id){
+    public ResponseEntity<?> getTaskById(@PathVariable Long id){
         return taskServices.returnTask(id);
     }
 
     @GetMapping
     public ResponseEntity<List<TaskDTO>> returnTasks(){
-        return ResponseEntity.ok(taskServices.allTasks());
+        return ResponseEntity.ok(taskServices.getTasks());
     }
 
     @PostMapping("/{idUser}")
@@ -39,7 +39,8 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStatusTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
-        return taskServices.updateStatusTask(taskDTO, id);
+        taskServices.updateStatusTask(taskDTO, id);
+        return ResponseEntity.ok().build();
     }
 
 }

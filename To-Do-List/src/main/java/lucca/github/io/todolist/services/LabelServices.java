@@ -18,12 +18,12 @@ public class LabelServices {
 
     private final LabelRepository labelRepository;
 
-    public LabelDTO createLabelDTO(LabelDTO labelDTO){
-        return new LabelDTO(labelDTO.id(), labelDTO.name(), labelDTO.tasks());
+    public LabelDTO createLabelDTO(Label label){
+        return new LabelDTO(label.getId(), label.getName(), label.getTasks());
     }
 
     public void createLabel(LabelDTO labelDTO){
-        Label label = new Label(labelDTO.id(),labelDTO.name(), labelDTO.tasks());
+        Label label = new Label(labelDTO.name());
         labelRepository.save(label);
     }
 
@@ -36,19 +36,48 @@ public class LabelServices {
 
         List<LabelDTO> labelDTOs = new ArrayList<>();
         for(Label label : labels){
-            labelDTOs.add(new LabelDTO(label.getId(),label.getName(),label.getTasks()));
+            labelDTOs.add(createLabelDTO(label));
         }
         return ResponseEntity.ok(labelDTOs);
     }
 
     public ResponseEntity<?> getLabelById(Long id){
         Optional<Label> label = labelRepository.findById(id);
+
         if(label.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(new LabelDTO(label.get().getId(),label.get().getName(),label.get().getTasks()));
     }
 
+    public ResponseEntity<?> deleteLabelById(Long id){
+        Optional<Label> label = labelRepository.findById(id);
 
+        if(label.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        labelRepository.deleteById(id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> updateLabel(LabelDTO labelDTO){
+        Optional<Label> foundLabel = labelRepository.findById(labelDTO.id());
+
+        if(foundLabel.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Label label = foundLabel.get();
+
+        label.setId(labelDTO.id());
+        label.setName(labelDTO.name());
+        label.setTasks(labelDTO.tasks());
+        labelRepository.save(label);
+
+        return ResponseEntity.ok().build();
+
+    }
 
 }

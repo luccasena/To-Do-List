@@ -32,5 +32,15 @@ public class LabelController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteLabel(@PathVariable Long id){
+        labelServices.deleteLabelById(id);
+        return ResponseEntity.ok().build();
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateLabel(@PathVariable Long id, @RequestBody LabelDTO labelDTO){
+        labelServices.updateLabel(labelDTO);
+        return ResponseEntity.ok().build();
+    }
 }

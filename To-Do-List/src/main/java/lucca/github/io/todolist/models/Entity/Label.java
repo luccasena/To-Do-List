@@ -14,8 +14,7 @@ import java.util.List;
 @Data
 public class Label {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -23,5 +22,9 @@ public class Label {
     @ManyToMany(mappedBy = "labels")
     @JsonIgnore
     private List<Task> tasks;
+
+    public Label(String name) {
+        this.name = name;
+    }
 
 }

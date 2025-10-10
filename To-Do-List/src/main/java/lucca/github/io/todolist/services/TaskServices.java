@@ -47,7 +47,7 @@ public class TaskServices {
 
     }
 
-    public List<TaskDTO> allTasks(){
+    public List<TaskDTO> getTasks(){
         List<Task>      tasks    = taskRepository.findAll();
         List<TaskDTO>   taskDTOS = new ArrayList<>();
 
@@ -61,48 +61,52 @@ public class TaskServices {
 
     // --------------------------------------------------
 
-    public ResponseEntity<?> createTask(Long idUser, TaskCreateRequest taskDTO){
+    public void createTask(Long idUser, TaskCreateRequest taskDTO){
         Optional<User> foundUser = userRepository.findById(idUser);
 
         if(foundUser.isEmpty()){
-            return ResponseEntity.badRequest().body("");
+            ResponseEntity.notFound().build();
+            return;
         }
+
         User user = foundUser.get();
 
-        List<Label> labels = labelRepository.findAllById(taskDTO.labelIds());
+        List<Label>  labels         = labelRepository.findAllById(taskDTO.labelIds());
 
-        Task task = new Task(user, taskDTO.title(), taskDTO.description(), taskDTO.done(), labels);
+        Task task = new Task(user, taskDTO.title(), taskDTO.done(), labels);
         taskRepository.save(task);
-        return ResponseEntity.ok(task);
+
     }
 
     // --------------------------------------------------
 
-    public ResponseEntity<?> deleteTask(Long id){
+    public void deleteTask(Long id){
         Optional<Task> taskOptional = findTaskByID(id);
 
         if(taskOptional.isEmpty()){
-            return ResponseEntity.badRequest().body("No such task");
+            ResponseEntity.badRequest().body("No such task");
+            return;
         }
         taskRepository.delete(taskOptional.get());
 
-        return ResponseEntity.status(204).build();
+        ResponseEntity.status(204).build();
     }
 
     // --------------------------------------------------
 
-    public ResponseEntity<?> updateStatusTask(TaskDTO taskDTO, Long id){
+    public void updateStatusTask(TaskDTO taskDTO, Long id){
         Optional<Task> foundTask = findTaskByID(id);
 
         if(foundTask.isEmpty()){
-            return ResponseEntity.badRequest().body("No such task");
+            ResponseEntity.badRequest().body("No such task");
+            return;
         }
 
         Task task = foundTask.get();
         task.setDone(taskDTO.done());
         taskRepository.save(task);
 
-        return ResponseEntity.ok().body("Task has been updated");
+        ResponseEntity.ok().body("Task has been updated");
 
     }
 

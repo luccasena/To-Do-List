@@ -18,23 +18,27 @@ public class Task{
     private Long id;
 
     private String title;
-    private String description;
+
+    @OneToOne(mappedBy = "task")
+    @PrimaryKeyJoinColumn
+    @JsonIgnore()
+    private Description description;
+
     private Boolean done;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable( name = "tasks_labels",
                 joinColumns = @JoinColumn(name = "task_id"),
                 inverseJoinColumns = @JoinColumn(name = "label_id"))
     private List<Label> labels;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore()
     private User user;
 
-    public Task(User user,String title, String description, Boolean done, List<Label> labels) {
+    public Task(User user, String title, Boolean done, List<Label> labels) {
         this.title = title;
-        this.description = description;
         this.done = done;
         this.user = user;
         this.labels = labels;
