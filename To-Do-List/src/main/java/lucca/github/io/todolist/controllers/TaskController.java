@@ -15,31 +15,30 @@ import java.util.List;
 public class TaskController {
     private final TaskServices taskServices;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getTaskById(@PathVariable Long id){
-        return taskServices.returnTask(id);
+    @GetMapping("/{idTask}")
+    public ResponseEntity<?> getTaskById(@PathVariable Long idTask){
+        return taskServices.findTaskByID(idTask);
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> returnTasks(){
-        return ResponseEntity.ok(taskServices.getTasks());
+    public ResponseEntity<List<TaskDTO>> getAllTasks(){
+        return taskServices.getAllTasks();
     }
 
     @PostMapping("/{idUser}")
     public ResponseEntity<?> createTask(@PathVariable Long idUser, @RequestBody TaskCreateRequest taskDTO){
-        taskServices.createTask(idUser,taskDTO);
+        return taskServices.createTask(idUser, taskDTO);
+    }
+
+    @DeleteMapping("/{idTask}")
+    public ResponseEntity<?> deleteTask(@PathVariable Long idTask){
+        taskServices.deleteTask(idTask);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTask(@PathVariable Long id){
-        taskServices.deleteTask(id);
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateStatusTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
-        taskServices.updateStatusTask(taskDTO, id);
+    @PutMapping("/{idTask}")
+    public ResponseEntity<?> updateTask(@PathVariable Long idTask, @RequestBody TaskDTO taskDTO){
+        taskServices.updateTask(taskDTO, idTask);
         return ResponseEntity.ok().build();
     }
 

@@ -24,31 +24,28 @@ public class TaskServices {
     private final UserRepository userRepository;
     private final LabelRepository labelRepository;
 
-    // --------------------------------------------------
-
-    public Optional<Task> findTaskByID(Long id){
-        return taskRepository.findById(id);
-    }
-
     public TaskDTO createTaskDTO(Task task){
         return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
     }
 
-    // --------------------------------------------------
+    public ResponseEntity<TaskDTO> findTaskByID(Long id){
+        Optional<Task> foundTask = taskRepository.findById(id);
 
-    public ResponseEntity<?> returnTask(Long id){
-        Optional<Task> taskOptional = findTaskByID(id);
-
-        if(taskOptional.isEmpty()){
-            return ResponseEntity.badRequest().body("No such task");
+        if(foundTask.isEmpty()){
+            return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(createTaskDTO(taskOptional.get()));
-
+        TaskDTO taskDTO = createTaskDTO(foundTask.get());
+        return ResponseEntity.ok().body(taskDTO);
     }
 
-    public List<TaskDTO> getTasks(){
-        List<Task>      tasks    = taskRepository.findAll();
+    public ResponseEntity<List<TaskDTO>> getAllTasks(){
+        List<Task> tasks = taskRepository.findAll();
+
+        if(tasks.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
         List<TaskDTO>   taskDTOS = new ArrayList<>();
 
         for (Task task: tasks){
@@ -56,57 +53,54 @@ public class TaskServices {
             taskDTOS.add(taskDTO);
         }
 
-        return taskDTOS;
+        return ResponseEntity.ok().body(taskDTOS);
     }
 
-    // --------------------------------------------------
-
-    public void createTask(Long idUser, TaskCreateRequest taskDTO){
+    public ResponseEntity<?> createTask(Long idUser, TaskCreateRequest taskDTO){
         Optional<User> foundUser = userRepository.findById(idUser);
 
         if(foundUser.isEmpty()){
-            ResponseEntity.notFound().build();
-            return;
+            return ResponseEntity.notFound().build();
         }
 
         User user = foundUser.get();
 
-        List<Label>  labels         = labelRepository.findAllById(taskDTO.labelIds());
+        List<Label> labels = labelRepository.findAllById(taskDTO.labelIds());
+
+        if(labels.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
 
         Task task = new Task(user, taskDTO.title(), taskDTO.done(), labels);
         taskRepository.save(task);
-
+        return ResponseEntity.ok().build();
     }
 
-    // --------------------------------------------------
-
-    public void deleteTask(Long id){
-        Optional<Task> taskOptional = findTaskByID(id);
+    public ResponseEntity<?> deleteTask(Long id){
+        Optional<Task> taskOptional = taskRepository.findById(id);
 
         if(taskOptional.isEmpty()){
-            ResponseEntity.badRequest().body("No such task");
-            return;
+            return ResponseEntity.notFound().build();
         }
-        taskRepository.delete(taskOptional.get());
 
-        ResponseEntity.status(204).build();
+        taskRepository.delete(taskOptional.get());
+        return ResponseEntity.ok().build();
     }
 
-    // --------------------------------------------------
-
-    public void updateStatusTask(TaskDTO taskDTO, Long id){
-        Optional<Task> foundTask = findTaskByID(id);
+    public ResponseEntity<?> updateTask(TaskDTO taskDTO, Long id){
+        Optional<Task> foundTask = taskRepository.findById(id);
 
         if(foundTask.isEmpty()){
-            ResponseEntity.badRequest().body("No such task");
-            return;
+            return ResponseEntity.badRequest().body("No such task");
         }
 
         Task task = foundTask.get();
-        task.setDone(taskDTO.done());
-        taskRepository.save(task);
 
-        ResponseEntity.ok().body("Task has been updated");
+        task.setTitle(taskDTO.title());
+        task.setDone(taskDTO.done());
+
+        taskRepository.save(task);
+        return ResponseEntity.ok().build();
 
     }
 
