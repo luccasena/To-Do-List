@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.User;
 import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ public class UserServices {
     private final UserRepository userRepository;
 
     public UserDTO createUserDTO(User user){
-        return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getAge(), user.getEmail(), user.getPassword(), user.getTasks());
+        return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
 
     }
 
@@ -51,7 +50,7 @@ public class UserServices {
     }
 
     public ResponseEntity<?> createUser(UserDTO userDTO){
-        User user = new User(userDTO.name(), userDTO.lastname(), userDTO.age(), userDTO.email(), userDTO.password());
+        User user = new User(userDTO.name(), userDTO.lastname(), userDTO.cpf(), userDTO.email(), userDTO.password());
         userRepository.save(user);
 
         return ResponseEntity.ok().build();
@@ -79,7 +78,7 @@ public class UserServices {
 
         user.setName(userDTO.name());
         user.setLastname(userDTO.lastname());
-        user.setAge(userDTO.age());
+        user.setCpf(userDTO.cpf());
         user.setEmail(userDTO.email());
         user.setPassword(userDTO.password());
 

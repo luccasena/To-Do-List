@@ -20,7 +20,7 @@ public class User {
 
     private String name;
     private String lastname;
-    private Integer age;
+    private String cpf;
 
     @JsonIgnore
     private String email;
@@ -30,10 +30,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 
-    public User(String name, String lastname, Integer age, String email, String password) {
+    public User(String name, String lastname, String cpf, String email, String password) {
         this.name = name;
         this.lastname = lastname;
-        this.age = age;
+        this.cpf = cpf;
         this.email = email;
         this.password = password;
     }

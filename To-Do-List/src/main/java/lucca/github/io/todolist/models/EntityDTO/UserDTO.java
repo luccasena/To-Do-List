@@ -5,17 +5,28 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lucca.github.io.todolist.models.Entity.Task;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.util.List;
 
 
 public record UserDTO (Long id,
-                       @NotBlank(message = "Nome não pode ser vazio.")
-                       @Size(min = 3,max = 100, message = "Nome deve ter entre 3 e 100 caracteres")
+
+                       @NotBlank(message = "The name field must not be empty.")
+                       @Size(min = 3,max = 100, message = "The name field must contain between 3 and 100 characters.")
                        String name,
+
                        String lastname,
-                       Integer age,
-                       @Email
+
+                       @CPF(message = "Invalid CPF.")
+                       String cpf,
+
+                       @Email(message = "Invalid E-mail.")
+                       @NotBlank(message = "The e-mail field must not be empty.")
                        String email,
+
+                       @NotBlank(message = "The password field must not be empty.")
+                       @Size(min = 6,max = 60, message = "The password field must contain between 6 and 60 characters.")
                        String password,
-                       List<Task> tasks) { }
+
+                       List<Task> tasks) {}
