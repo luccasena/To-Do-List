@@ -1,7 +1,6 @@
 package lucca.github.io.todolist.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lucca.github.io.todolist.models.Entity.Description;
 import lucca.github.io.todolist.models.EntityDTO.DescriptionDTO;
 import lucca.github.io.todolist.services.DescriptionServices;
 import org.springframework.http.ResponseEntity;
@@ -17,32 +16,29 @@ public class DescriptionController {
 
     private final DescriptionServices descriptionServices;
 
-    @GetMapping("/{idDescription}")
-    public ResponseEntity<DescriptionDTO> getDescriptionById(@PathVariable Long idDescription){
-        return descriptionServices.findDescriptionById(idDescription);
+    @GetMapping("/{idTask}")
+    public ResponseEntity<DescriptionDTO> getDescriptionById(@PathVariable Long idTask){
+        return descriptionServices.findDescriptionById(idTask);
     }
 
     @GetMapping
     public ResponseEntity<List<DescriptionDTO>> getAllDescriptions(){
-        return descriptionServices.findAllDescriptions();
+        return descriptionServices.getAllDescriptions();
     }
 
     @PostMapping
     public ResponseEntity<?> createDescription(@RequestBody DescriptionDTO descriptionDTO){
-        descriptionServices.createDescription(descriptionDTO);
-        return ResponseEntity.ok().build();
+        return descriptionServices.createDescription(descriptionDTO);
 
     }
     @DeleteMapping("/{idDescription}")
     public ResponseEntity<?> deleteDescription(@PathVariable Long idDescription){
-        descriptionServices.deleteDescription(idDescription);
-        return ResponseEntity.ok().build();
+        return descriptionServices.deleteDescription(idDescription);
     }
 
     @PutMapping("/{idDescription}")
     public ResponseEntity<?> updateDescription(@PathVariable Long idDescription, @RequestBody DescriptionDTO descriptionDTO){
-        descriptionServices.updateDescription(idDescription, descriptionDTO);
-        return ResponseEntity.ok().build();
+        return descriptionServices.updateDescription(idDescription, descriptionDTO);
     }
 
 }

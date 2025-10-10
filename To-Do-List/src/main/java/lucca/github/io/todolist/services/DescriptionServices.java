@@ -24,7 +24,18 @@ public class DescriptionServices {
         return new DescriptionDTO(description.getText(),  description.getTask().getId());
     }
 
-    public ResponseEntity<List<DescriptionDTO>> findAllDescriptions(){
+    public ResponseEntity<DescriptionDTO> findDescriptionById(Long idDescription){
+        Optional<Description> foundDescription = descriptionRepository.findById(idDescription);
+
+        if(foundDescription.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        DescriptionDTO descriptionDTO = createDescriptionDTO(foundDescription.get());
+        return ResponseEntity.ok().body(descriptionDTO);
+    }
+
+    public ResponseEntity<List<DescriptionDTO>> getAllDescriptions(){
         List<Description> descriptions = descriptionRepository.findAll();
 
         if(descriptions.isEmpty()){
@@ -41,56 +52,47 @@ public class DescriptionServices {
 
     }
 
-    public ResponseEntity<DescriptionDTO> findDescriptionById(Long idDescription){
+    public ResponseEntity<Description> createDescription(DescriptionDTO descriptionDTO){
+        Optional<Task> foundTask = taskRepository.findById(descriptionDTO.taskId());
+
+        if(foundTask.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        Task task = foundTask.get();
+
+        Description description = new Description(descriptionDTO.text(), task);
+        descriptionRepository.save(description);
+
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<?> deleteDescription(Long idDescription){
         Optional<Description> foundDescription = descriptionRepository.findById(idDescription);
 
         if(foundDescription.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        DescriptionDTO descriptionDTO = createDescriptionDTO(foundDescription.get());
-        return ResponseEntity.ok().body(descriptionDTO);
+
+        descriptionRepository.deleteById(idDescription);
+        return ResponseEntity.ok().build();
     }
 
-    public void createDescription(DescriptionDTO descriptionDTO){
-        Optional<Task> foundTask = taskRepository.findById(descriptionDTO.taskId());
-
-        if(foundTask.isEmpty()){
-            ResponseEntity.badRequest().body("");
-            return;
-        }
-
-        Task task = foundTask.get();
-        Description description = new Description(descriptionDTO.text(), task);
-
-        descriptionRepository.save(description);
-
-        ResponseEntity.ok().build();
-    }
-
-    public void deleteDescription(Long idDescription){
+    public ResponseEntity<?> updateDescription(Long idDescription, DescriptionDTO descriptionDTO){
         Optional<Description> foundDescription = descriptionRepository.findById(idDescription);
 
         if(foundDescription.isEmpty()){
-            ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build();
+
         }
 
         Description description = foundDescription.get();
-        descriptionRepository.delete(description);
-        ResponseEntity.ok().build();
 
-    }
-
-    public void updateDescription(Long idDescription, DescriptionDTO descriptionDTO){
-        Optional<Description> foundDescription = descriptionRepository.findById(idDescription);
-
-        if(foundDescription.isEmpty()){
-            ResponseEntity.notFound().build();
-
-        }
-        Description description = foundDescription.get();
         description.setText(descriptionDTO.text());
+
         descriptionRepository.save(description);
+        return ResponseEntity.ok().build();
     }
 
 }
