@@ -1,5 +1,6 @@
 package lucca.github.io.todolist.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.EntityDTO.TaskCreateRequest;
 import lucca.github.io.todolist.models.EntityDTO.TaskDTO;
@@ -26,7 +27,7 @@ public class TaskController {
     }
 
     @PostMapping("/{idUser}")
-    public ResponseEntity<?> createTask(@PathVariable Long idUser, @RequestBody TaskCreateRequest taskDTO){
+    public ResponseEntity<?> createTask(@PathVariable Long idUser, @RequestBody @Valid TaskCreateRequest taskDTO){
         return taskServices.createTask(idUser, taskDTO);
     }
 
@@ -37,7 +38,7 @@ public class TaskController {
     }
 
     @PutMapping("/{idTask}")
-    public ResponseEntity<?> updateTask(@PathVariable Long idTask, @RequestBody TaskDTO taskDTO){
+    public ResponseEntity<?> updateTask(@PathVariable Long idTask, @RequestBody @Valid TaskCreateRequest taskDTO){
         taskServices.updateTask(taskDTO, idTask);
         return ResponseEntity.ok().build();
     }

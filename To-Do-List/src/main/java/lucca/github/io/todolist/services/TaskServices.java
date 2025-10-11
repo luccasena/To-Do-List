@@ -87,7 +87,7 @@ public class TaskServices {
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> updateTask(TaskDTO taskDTO, Long id){
+    public ResponseEntity<?> updateTask(TaskCreateRequest taskDTO, Long id){
         Optional<Task> foundTask = taskRepository.findById(id);
 
         if(foundTask.isEmpty()){
@@ -98,6 +98,14 @@ public class TaskServices {
 
         task.setTitle(taskDTO.title());
         task.setDone(taskDTO.done());
+
+        List<Label> labels = labelRepository.findAllById(taskDTO.labelIds());
+
+        if(labels.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+
+        task.setLabels(labels);
 
         taskRepository.save(task);
         return ResponseEntity.ok().build();
