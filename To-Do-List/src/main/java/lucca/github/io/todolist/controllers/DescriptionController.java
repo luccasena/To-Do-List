@@ -1,5 +1,6 @@
 package lucca.github.io.todolist.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.EntityDTO.DescriptionDTO;
 import lucca.github.io.todolist.services.DescriptionServices;
@@ -27,7 +28,7 @@ public class DescriptionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createDescription(@RequestBody DescriptionDTO descriptionDTO){
+    public ResponseEntity<?> createDescription(@RequestBody @Valid DescriptionDTO descriptionDTO){
         return descriptionServices.createDescription(descriptionDTO);
 
     }
@@ -37,7 +38,7 @@ public class DescriptionController {
     }
 
     @PutMapping("/{idDescription}")
-    public ResponseEntity<?> updateDescription(@PathVariable Long idDescription, @RequestBody DescriptionDTO descriptionDTO){
+    public ResponseEntity<?> updateDescription(@PathVariable Long idDescription, @RequestBody @Valid DescriptionDTO descriptionDTO){
         return descriptionServices.updateDescription(idDescription, descriptionDTO);
     }
 
