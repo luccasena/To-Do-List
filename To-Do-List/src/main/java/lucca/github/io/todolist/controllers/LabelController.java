@@ -1,5 +1,6 @@
 package lucca.github.io.todolist.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.EntityDTO.LabelDTO;
 import lucca.github.io.todolist.services.LabelServices;
@@ -27,7 +28,7 @@ public class LabelController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createLabel(@RequestBody LabelDTO labelDTO){
+    public ResponseEntity<?> createLabel(@RequestBody @Valid LabelDTO labelDTO){
         labelServices.createLabel(labelDTO);
         return ResponseEntity.ok().build();
     }
@@ -38,7 +39,7 @@ public class LabelController {
     }
 
     @PutMapping("/{idLabel}")
-    public ResponseEntity<?> updateLabel(@PathVariable Long idLabel, @RequestBody LabelDTO labelDTO){
+    public ResponseEntity<?> updateLabel(@PathVariable Long idLabel, @RequestBody @Valid LabelDTO labelDTO){
         return labelServices.updateLabel(idLabel, labelDTO);
     }
 
