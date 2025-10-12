@@ -2,6 +2,7 @@ package lucca.github.io.todolist.services;
 
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.Label;
+import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.EntityDTO.LabelDTO;
 import lucca.github.io.todolist.repositories.LabelRepository;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,12 @@ import java.util.Optional;
 public class LabelServices {
 
     private final LabelRepository labelRepository;
+
+    public List<Label> searchAllLabels(List<Long> labelIds){
+        return labelRepository.findAllById(labelIds);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     public LabelDTO createLabelDTO(Label label){
         return new LabelDTO(label.getId(), label.getName(), label.getTasks());

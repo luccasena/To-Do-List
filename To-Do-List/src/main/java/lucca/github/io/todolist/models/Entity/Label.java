@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Table(name = "labels")
 public class Label {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
