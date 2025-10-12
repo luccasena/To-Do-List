@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Table(name = "descriptions")
 public class Description {
     @Id
-    @Column(name = "task_id")
     private Long id;
 
     private String text;

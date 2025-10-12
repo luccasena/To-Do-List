@@ -12,6 +12,9 @@ public record TaskCreateRequest(
                                 @Size(min = 3, max = 40, message = "The title field must contain between 3 and 100 characters.")
                                 String title,
 
+                                @Size(min = 3, max = 255, message = "The title field must contain between 3 and 100 characters.")
+                                String description,
+
                                 @NotNull(message = "The done field must not be empty.")
                                 Boolean done,
 

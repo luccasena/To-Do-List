@@ -29,17 +29,17 @@ public class DescriptionController {
 
     @PostMapping
     public ResponseEntity<?> createDescription(@RequestBody @Valid DescriptionDTO descriptionDTO){
-        return descriptionServices.createDescription(descriptionDTO);
+        return descriptionServices.getAllDescriptions();
 
     }
     @DeleteMapping("/{idDescription}")
     public ResponseEntity<?> deleteDescription(@PathVariable Long idDescription){
-        return descriptionServices.deleteDescription(idDescription);
+        return descriptionServices.getAllDescriptions();
     }
 
     @PutMapping("/{idDescription}")
     public ResponseEntity<?> updateDescription(@PathVariable Long idDescription, @RequestBody @Valid DescriptionDTO descriptionDTO){
-        return descriptionServices.updateDescription(idDescription, descriptionDTO);
+        return descriptionServices.getAllDescriptions();
     }
 
 }

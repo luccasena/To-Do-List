@@ -18,7 +18,6 @@ import java.util.Optional;
 public class DescriptionServices {
 
     private final DescriptionRepository descriptionRepository;
-    private final TaskRepository taskRepository;
 
     public DescriptionDTO createDescriptionDTO(Description description){
         return new DescriptionDTO(description.getText(),  description.getTask().getId());
@@ -52,39 +51,27 @@ public class DescriptionServices {
 
     }
 
-    public ResponseEntity<Description> createDescription(DescriptionDTO descriptionDTO){
-        Optional<Task> foundTask = taskRepository.findById(descriptionDTO.taskId());
-
-        if(foundTask.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        Task task = foundTask.get();
+    public Description createDescription(DescriptionDTO descriptionDTO,Task task){
 
         Description description = new Description(descriptionDTO.text(), task);
-        descriptionRepository.save(description);
 
-        return ResponseEntity.ok().build();
+        return descriptionRepository.save(description);
     }
 
-    public ResponseEntity<?> deleteDescription(Long idDescription){
+    public void deleteDescription(Long idDescription){
         Optional<Description> foundDescription = descriptionRepository.findById(idDescription);
 
         if(foundDescription.isEmpty()){
-            return ResponseEntity.notFound().build();
+            throw new RuntimeException("Description not found");
         }
-
-
         descriptionRepository.deleteById(idDescription);
-        return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> updateDescription(Long idDescription, DescriptionDTO descriptionDTO){
+    public void updateDescription(Long idDescription, DescriptionDTO descriptionDTO){
         Optional<Description> foundDescription = descriptionRepository.findById(idDescription);
 
         if(foundDescription.isEmpty()){
-            return ResponseEntity.notFound().build();
-
+            throw new RuntimeException("Description not found");
         }
 
         Description description = foundDescription.get();
@@ -92,7 +79,6 @@ public class DescriptionServices {
         description.setText(descriptionDTO.text());
 
         descriptionRepository.save(description);
-        return ResponseEntity.ok().build();
     }
 
 }

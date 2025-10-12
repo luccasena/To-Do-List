@@ -1,9 +1,11 @@
 package lucca.github.io.todolist.services;
 
 import lombok.RequiredArgsConstructor;
+import lucca.github.io.todolist.models.Entity.Description;
 import lucca.github.io.todolist.models.Entity.Label;
 import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.Entity.User;
+import lucca.github.io.todolist.models.EntityDTO.DescriptionDTO;
 import lucca.github.io.todolist.models.EntityDTO.TaskCreateRequest;
 import lucca.github.io.todolist.models.EntityDTO.TaskDTO;
 import lucca.github.io.todolist.repositories.LabelRepository;
@@ -21,8 +23,16 @@ import java.util.Optional;
 public class TaskServices {
 
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
-    private final LabelRepository labelRepository;
+
+    private final UserServices userServices;
+    private final DescriptionServices descriptionServices;
+    private final LabelServices labelServices;
+
+    public Optional<Task> searchTaskById(Long idTask){
+        return taskRepository.findById(idTask);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     public TaskDTO createTaskDTO(Task task){
         return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
@@ -57,7 +67,7 @@ public class TaskServices {
     }
 
     public ResponseEntity<?> createTask(Long idUser, TaskCreateRequest taskDTO){
-        Optional<User> foundUser = userRepository.findById(idUser);
+        Optional<User> foundUser = userServices.searchUserById(idUser);
 
         if(foundUser.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -65,14 +75,25 @@ public class TaskServices {
 
         User user = foundUser.get();
 
-        List<Label> labels = labelRepository.findAllById(taskDTO.labelIds());
+        List<Label> labels = labelServices.searchAllLabels(taskDTO.labelIds());
 
         if(labels.isEmpty()){
             return ResponseEntity.badRequest().build();
         }
 
         Task task = new Task(user, taskDTO.title(), taskDTO.done(), labels);
+
+        Description description = new Description();
+
+        description.setText(taskDTO.description());
+        description.setTask(task);
+
+        task.setDescription(description);
         taskRepository.save(task);
+
+        DescriptionDTO descriptionDTO = new DescriptionDTO(description.getText(), description.getTask().getId());
+        descriptionServices.createDescription(descriptionDTO, task);
+
         return ResponseEntity.ok().build();
     }
 
@@ -99,7 +120,7 @@ public class TaskServices {
         task.setTitle(taskDTO.title());
         task.setDone(taskDTO.done());
 
-        List<Label> labels = labelRepository.findAllById(taskDTO.labelIds());
+        List<Label> labels = labelServices.searchAllLabels(taskDTO.labelIds());
 
         if(labels.isEmpty()){
             return ResponseEntity.badRequest().build();
