@@ -5,7 +5,6 @@ import lucca.github.io.todolist.models.Entity.Description;
 import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.EntityDTO.DescriptionDTO;
 import lucca.github.io.todolist.repositories.DescriptionRepository;
-import lucca.github.io.todolist.repositories.TaskRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -51,11 +50,11 @@ public class DescriptionServices {
 
     }
 
-    public Description createDescription(DescriptionDTO descriptionDTO,Task task){
+    public void createDescription(DescriptionDTO descriptionDTO, Task task){
 
         Description description = new Description(descriptionDTO.text(), task);
 
-        return descriptionRepository.save(description);
+        descriptionRepository.save(description);
     }
 
     public void deleteDescription(Long idDescription){

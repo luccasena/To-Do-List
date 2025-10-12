@@ -91,9 +91,6 @@ public class TaskServices {
         task.setDescription(description);
         taskRepository.save(task);
 
-        DescriptionDTO descriptionDTO = new DescriptionDTO(description.getText(), description.getTask().getId());
-        descriptionServices.createDescription(descriptionDTO, task);
-
         return ResponseEntity.ok().build();
     }
 
@@ -127,6 +124,9 @@ public class TaskServices {
         }
 
         task.setLabels(labels);
+
+        task.getDescription().setText(taskDTO.description());
+        task.getDescription().setTask(task);
 
         taskRepository.save(task);
         return ResponseEntity.ok().build();
