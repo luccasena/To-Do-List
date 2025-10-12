@@ -17,14 +17,17 @@ Além de servir como estudo, o sistema busca simular uma aplicação real de lis
 ## 🛠️ Tecnologias Utilizadas
 - **Java 21**  
 - **Spring Boot**  
-- **Spring Data JPA / Hibernate**  
+- **Spring Data JPA / Hibernate**
+- **Spring Validation**
 - **Lombok**  
-- **Banco de dados relacional (MySQL/PostgreSQL)**  
+- **Banco de dados relacional (MySQL/PostgreSQL)**
+
 
 ## 📂 Estrutura Básica
-- **User** → representa o usuário que acessa a aplicação  
-- **Task** → representa uma tarefa criada pelo usuário  
-- **Label** → etiquetas para organizar e classificar tarefas  
+- **User** → representa o usuário que acessa a aplicação.
+- **Task** → representa uma tarefa criada pelo usuário.
+- **Label** → etiquetas para organizar e classificar tarefas.
+- **Description** → representa a descrição de uma tarefa.
 
 ## 📌 Status do Projeto
 🚧 Em desenvolvimento 🚧  
