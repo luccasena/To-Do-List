@@ -17,6 +17,12 @@ public class UserServices {
 
     private final UserRepository userRepository;
 
+    public Optional<User> searchUserById(Long idUser){
+        return userRepository.findById(idUser);
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
     public UserDTO createUserDTO(User user){
         return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
 
