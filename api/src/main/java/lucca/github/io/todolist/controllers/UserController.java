@@ -16,6 +16,8 @@ import java.util.List;
 public class UserController {
     private final UserServices userServices;
 
+    // ----------------------------------------------------------------------------
+
     @GetMapping("/{idUser}")
     public ResponseEntity<?> getUserById(@PathVariable Long idUser) {
         return userServices.findUserByID(idUser);
@@ -41,6 +43,10 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO userDTO) {
         userServices.updateUser(id, userDTO);
-        return ResponseEntity.ok().build();}
+        return ResponseEntity.ok().build();
+    }
+
+    // ----------------------------------------------------------------------------
+
 
 }
