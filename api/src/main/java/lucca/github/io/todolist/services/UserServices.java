@@ -2,6 +2,7 @@ package lucca.github.io.todolist.services;
 
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.User;
+import lucca.github.io.todolist.models.EntityDTO.LoginRequest;
 import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -90,6 +92,42 @@ public class UserServices {
 
         userRepository.save(user);
         return ResponseEntity.ok().build();
+    }
+
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public ResponseEntity<?> login(LoginRequest user){
+        Optional<User> foundUser = userRepository.findUserByEmail(user.email());
+
+        if(foundUser.isEmpty()){
+            return ResponseEntity.status(404).body(
+                    Map.of(
+                            "sucess", false,
+                            "message", "User not found."
+                    )
+            );
+        }
+
+        if(!foundUser.get().getPassword().equals(user.password()) || !foundUser.get().getEmail().equals(user.email())){
+            return ResponseEntity.status(401).body(
+                    Map.of(
+                            "sucess", false,
+                            "message", "Credentional invalid."
+                    )
+            );
+        }
+
+        UserDTO userDTO = createUserDTO(foundUser.get());
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Logged in.",
+                "user", Map.of(
+                        "id", userDTO.id(),
+                        "nome", userDTO.name(),
+                        "email", userDTO.email()
+                )
+        ));
     }
 
 }
