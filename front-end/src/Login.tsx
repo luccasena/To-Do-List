@@ -11,9 +11,15 @@ import {
 import { Login as LoginIcon } from "@mui/icons-material";
 import { z } from "zod";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const emailSchema = z.email();
 const passwordSchema = z.string().min(6).max(60);
+
+type Authlog = {
+  email: string,
+  password: string,
+}
 
 interface LoginResponse {
   success: boolean;
@@ -28,9 +34,12 @@ interface LoginResponse {
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
     if (!email.trim()) return { isValid: false, error: "" };
@@ -57,10 +66,28 @@ const Login: React.FC = () => {
     setEmail(event.target.value);
     setError("");
   };
+
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
     setError("");
   };
+
+  const fetchUserByEmail = async (email: string) => {
+    console.log("Buscando usuário pelo email:", email);
+    try {
+      const response = await axios.get(`http://localhost:8080/users/informations`, {
+        params: { email }, // aqui vai o ?email=...
+      });
+
+      console.log("Usuário encontrado:", response.data);
+      return response.data;
+
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -74,12 +101,14 @@ const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
+
+      const authlog: Authlog = {
+        email,
+        password,
+      };
+
       const response = await axios.post<LoginResponse>(
-        "http://localhost:8080/auth/login",
-        {
-          email,
-          password,
-        }
+        "http://localhost:8080/auth/login", authlog
       );
       console.log(response.data);
 
@@ -87,6 +116,11 @@ const Login: React.FC = () => {
       const data = response.data;
       setSuccess(data.message || "Login realizado com sucesso!");
       
+      const userData = await fetchUserByEmail(email);
+
+      setTimeout(() => {
+        navigate('/home', {state:{user: userData}});
+      })
       
     } catch (error) {
       // Axios automaticamente trata códigos de erro como exceção
@@ -107,6 +141,10 @@ const Login: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRedirect = () => {
+    navigate('/register');
   };
 
   return (
@@ -180,10 +218,12 @@ const Login: React.FC = () => {
               "Entrar"
             )}
           </Button>
+          <Button onClick={handleRedirect}>Não tem uma conta? - Crie sua conta</Button>
         </Box>
       </Paper>
     </Box>
   );
+  
 };
 
 export default Login;
