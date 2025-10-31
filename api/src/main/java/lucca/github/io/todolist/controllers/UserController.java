@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class UserController {
     private final UserServices userServices;
@@ -21,6 +22,11 @@ public class UserController {
     @GetMapping("/{idUser}")
     public ResponseEntity<?> getUserById(@PathVariable Long idUser) {
         return userServices.findUserByID(idUser);
+    }
+
+    @GetMapping("/informations")
+    public ResponseEntity<?> getUserByName(@RequestParam String email) {
+        return userServices.findUserByEmail(email);
     }
 
     @GetMapping

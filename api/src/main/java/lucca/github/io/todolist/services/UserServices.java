@@ -7,6 +7,8 @@ import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,9 @@ public class UserServices {
         return userRepository.findById(idUser);
     }
 
+    public Optional<User> searchUserByEmail(String email){
+        return userRepository.findByEmail(email);
+    }
     // -----------------------------------------------------------------------------------------------------------------
 
     public UserDTO createUserDTO(User user){
@@ -130,4 +135,14 @@ public class UserServices {
         ));
     }
 
+    public ResponseEntity<?> findUserByEmail(String email){
+        Optional<User> foundUser = searchUserByEmail(email);
+
+        if(foundUser.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+
+        UserDTO userDTO = createUserDTO(foundUser.get());
+        return ResponseEntity.ok().body(userDTO);
+    }
 }
