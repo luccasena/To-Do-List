@@ -75,7 +75,7 @@ function TaskItem({ task }: { task: TaskDTO }) {
                             disableRipple/>
                     </ListItemIcon>
                     <ListItemText 
-                        primary={`${task.id}. ${task.title}`}/>
+                        primary={`${task.title}`}/>
                 </ListItemButton>
             </ListItem>
             <TaskModal task={task} openModal={openModal} handleClose={handleClose}/>
