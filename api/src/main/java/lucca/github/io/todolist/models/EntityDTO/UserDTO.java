@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lucca.github.io.todolist.models.Entity.Task;
-import org.hibernate.validator.constraints.br.CPF;
 
 import java.util.List;
 
@@ -16,7 +15,6 @@ public record UserDTO (Long id,
 
                        String lastname,
 
-                       @CPF(message = "Invalid CPF.")
                        String cpf,
 
                        @Email(message = "Invalid E-mail.")
