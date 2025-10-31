@@ -55,7 +55,7 @@ const Login: React.FC = () => {
     const result = passwordSchema.safeParse(password);
     return {
       isValid: result.success,
-      error: result.success ? "" : "A senha deve ter pelo menos 4 caracteres",
+      error: result.success ? "" : "A senha deve ter pelo menos 6 caracteres",
     };
   };
 

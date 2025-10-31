@@ -58,7 +58,7 @@ const Register: React.FC = () => {
             isValid: result.success,
             error: result.success ? "" : "O nome deve ter entre 3 e 100 caracteres",
         };
-    }
+    };
 
     const validateEmail = (email: string) => {
         if (!email.trim()) return { isValid: false, error: "" };
@@ -74,7 +74,7 @@ const Register: React.FC = () => {
         const result = passwordSchema.safeParse(password);
         return {
             isValid: result.success,
-            error: result.success ? "" : "A senha deve ter pelo menos 4 caracteres",
+            error: result.success ? "" : "A senha deve ter pelo menos 6 caracteres",
         };
     };
 
@@ -94,7 +94,7 @@ const Register: React.FC = () => {
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
     setError("");
-    }
+    };
 
     const handleLastnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setLastname(event.target.value);
@@ -166,8 +166,6 @@ const Register: React.FC = () => {
 
     }
 };
-
-
 
   return (
     <Box
