@@ -1,6 +1,5 @@
 package lucca.github.io.todolist.controllers;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.EntityDTO.UserDTO;
@@ -25,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/informations")
-    public ResponseEntity<?> getUserByName(@RequestParam String email) {
+    public ResponseEntity<?> getUserByEmail(@RequestParam String email) {
         return userServices.findUserByEmail(email);
     }
 
