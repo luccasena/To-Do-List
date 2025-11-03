@@ -9,19 +9,13 @@ import InfoIcon from '@mui/icons-material/Info';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
-import TaskModal from './TaskModal.tsx';
+import TaskModal from './TaskModal';
+import type { TaskItemProps } from "../types/task/taskitemprop";
 
-export type TaskDTO = {
-    id: number;
-    title: string;
-    description?: { id: number; text: string };
-    done?: boolean;
-    labels?: { id: number; text: string }[];
-}
 
-function TaskItem({ task }: { task: TaskDTO }) {
+function TaskItem(TaskItemProps: TaskItemProps) {
 
-    const [checked, setChecked] = React.useState([1]);
+    const [checked, setChecked] = React.useState([0]);
     const [openModal, setOpenModal] = React.useState<"info" | "edit" | "delete" | null>(null);
 
     const handleToggle = (value: number) => () => {
@@ -38,6 +32,7 @@ function TaskItem({ task }: { task: TaskDTO }) {
     };
 
     const handleOpenModal = (type: "info" | "edit" | "delete") => () => {
+        console.log("abrir modal de", type);
         setOpenModal(type);
     };
     
@@ -46,7 +41,7 @@ function TaskItem({ task }: { task: TaskDTO }) {
     return(
         <>
             <ListItem
-                key={task.id}
+                key={TaskItemProps.task.id}
                 secondaryAction={
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <IconButton edge="end" aria-label="info" onClick={handleOpenModal("info")}>
@@ -65,20 +60,20 @@ function TaskItem({ task }: { task: TaskDTO }) {
                 disablePadding>
                 <ListItemButton 
                     sx={{padding: "10px", margin: "15px"}} 
-                    onClick={handleToggle(task.id)} 
+                    onClick={handleToggle(TaskItemProps.task.id)} 
                     dense>
                     <ListItemIcon>
                         <Checkbox
                             edge="start"
-                            checked={checked.includes(task.id)}
+                            checked={TaskItemProps.task.done}
                             tabIndex={-1}
                             disableRipple/>
                     </ListItemIcon>
                     <ListItemText 
-                        primary={`${task.title}`}/>
+                        primary={`${TaskItemProps.task.title}`}/>
                 </ListItemButton>
             </ListItem>
-            <TaskModal task={task} openModal={openModal} handleClose={handleClose}/>
+            <TaskModal task={TaskItemProps.task} openModal={openModal} handleClose={handleClose} userId={TaskItemProps.userId}/>
         </>
     );
 }
