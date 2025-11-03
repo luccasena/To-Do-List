@@ -12,6 +12,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/labels")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class LabelController {
 

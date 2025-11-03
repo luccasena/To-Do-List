@@ -12,24 +12,13 @@ import { Login as LoginIcon } from "@mui/icons-material";
 import { z } from "zod";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import type { Authlog } from "./types/user/authlog";
+import type { User } from "./types/user/user";
+import { realizaLogin } from "./services/usuarioService";
+
 
 const emailSchema = z.email();
 const passwordSchema = z.string().min(6).max(60);
-
-type Authlog = {
-  email: string,
-  password: string,
-}
-
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  user?: {
-    id: string;
-    nome: string;
-    email: string;
-  };
-}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -72,22 +61,6 @@ const Login: React.FC = () => {
     setError("");
   };
 
-  const fetchUserByEmail = async (email: string) => {
-    console.log("Buscando usuário pelo email:", email);
-    try {
-      const response = await axios.get(`http://localhost:8080/users/informations`, {
-        params: { email }, // aqui vai o ?email=...
-      });
-
-      console.log("Usuário encontrado:", response.data);
-      return response.data;
-
-    } catch (error) {
-      console.error("Erro ao buscar usuário:", error);
-      return null;
-    }
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -107,19 +80,14 @@ const Login: React.FC = () => {
         password,
       };
 
-      const response = await axios.post<LoginResponse>(
-        "http://localhost:8080/auth/login", authlog
-      );
-      console.log(response.data);
-
       // Axios automaticamente trata HTTP 200-299 como sucesso
-      const data = response.data;
-      setSuccess(data.message || "Login realizado com sucesso!");
-      
-      const userData = await fetchUserByEmail(email);
+      const data: User = await realizaLogin(authlog);
 
+      console.log("Login bem-sucedido:", data);
+
+      // setSuccess(data.message || "Login realizado com sucesso!");
       setTimeout(() => {
-        navigate('/home', {state:{user: userData}});
+        navigate('/home', {state:{user: data}}); // Alternativa: Local Storage
       })
       
     } catch (error) {

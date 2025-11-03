@@ -1,24 +1,23 @@
+import * as React from 'react';
 import {Box, Typography} from '@mui/material';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import { TextField } from '@mui/material';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
-export type TaskDTO = {
-    id: number;
-    title: string;
-    description?: { id: number; text: string };
-    done?: boolean;
-    labels?: { id: number; text: string }[];
-}
+import { getLabels } from '../services/labelService';
 
-interface TaskModalProps {
-  task?: TaskDTO;
-  openModal: "info" | "edit" | "delete" | "add" | null;
-  handleClose: () => void;
-}
 
-function TaskModal({ task, openModal, handleClose }: TaskModalProps
-){
+import type { TaskModalProps } from '../types/task/taskmodalprop';
+import { useEffect } from 'react';
+import type { Label } from '../types/label';
+
+
+const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, userId }: TaskModalProps) => {
     const card_style = {
             display: "flex",
             flexDirection: "column",
@@ -35,15 +34,50 @@ function TaskModal({ task, openModal, handleClose }: TaskModalProps
             p: 4
     };
 
+    const [idUser, setUserId] = React.useState<number | undefined>();
+    const [labels, setLabels] = React.useState<Label[]>([]);
+
+    const obterLabels = async () => {
+        const labelsResponse = await getLabels();
+        setLabels(labelsResponse);
+        
+    }
+
+
+    useEffect(() => {
+        obterLabels();
+
+    }, []);
+
+    const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        handleClose();
+
+        if (openModal === "add") {
+            // Lógica para adicionar a tarefa
+            setUserId(userId);
+
+
+        }
+        else if (openModal === "edit") {
+            // Lógica para editar a tarefa
+
+        } 
+        else if (openModal === "delete") {
+            // Lógica para editar a tarefa
+
+        } 
+      };
+
     return(
         <Modal open={Boolean(openModal)} onClose={handleClose}>
-        <Box sx={card_style}>
+        <Box component="form" sx={card_style} onSubmit={handleSubmit}>
           {openModal === "info" && (
             <>
               <Typography variant="h6"><strong>Título:</strong> {task?.title}</Typography>
-              <Typography variant="body1"><strong>Descrição:</strong> {task?.description?.text || "Sem descrição disponível."}</Typography>
+              <Typography variant="body1"><strong>Descrição:</strong> {task?.description?.text}</Typography>
               <Typography variant="body1"><strong>Status:</strong> {task?.done ? "Concluída" : "Pendente"}</Typography>
-              <Typography variant="body1"><strong>Labels:</strong> {task?.labels?.map(l => l.text).join(", ") || "Sem labels"}</Typography>
+              <Typography variant="body1"><strong>Labels:</strong> {task?.labels?.map(l => l.name).join(", ")}</Typography>
             </>
           )}
 
@@ -62,7 +96,18 @@ function TaskModal({ task, openModal, handleClose }: TaskModalProps
                         type="descricao"
                         fullWidth
                         margin="normal"
-                    />        
+                    />     
+                    <FormControl>
+                      <FormLabel id="demo-radio-buttons-group-label">Labels</FormLabel>
+                      <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        name="radio-buttons-group"
+                      >
+                        {labels?.map((label) => (
+                          <FormControlLabel key={label.id} value={label.id} control={<Radio />} label={label.name} />
+                        ))}
+                      </RadioGroup>
+                    </FormControl>   
                 </Box>
 
               <Button variant="contained" color="primary" onClick={handleClose}>
@@ -85,6 +130,7 @@ function TaskModal({ task, openModal, handleClose }: TaskModalProps
               </Box>
             </>
           )}
+
           {openModal === "add" && (
             <>
                 <Typography variant="h5">Adicionar Tarefa tarefa</Typography>
@@ -100,7 +146,19 @@ function TaskModal({ task, openModal, handleClose }: TaskModalProps
                         type="descricao"
                         fullWidth
                         margin="normal"
-                    />        
+                    />    
+                    <FormControl>
+                    <FormLabel id="demo-radio-buttons-group-label">Labels</FormLabel>
+                      <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue="female"
+                        name="radio-buttons-group"
+                      >
+                        {labels?.map((label) => (
+                          <FormControlLabel key={label.id} value={label.id} control={<Radio />} label={label.name} />
+                        ))}
+                      </RadioGroup>
+                  </FormControl>    
                 </Box>
 
               <Button variant="contained" color="primary" onClick={handleClose}>

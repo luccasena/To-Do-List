@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskServices taskServices;
@@ -21,9 +22,10 @@ public class TaskController {
         return taskServices.findTaskByID(idTask);
     }
 
+
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAllTasks(){
-        return taskServices.getAllTasks();
+    public ResponseEntity<List<TaskDTO>> getAllTasks(@RequestParam(required = false) Long userId){
+        return taskServices.getAllTasks(userId);
     }
 
     @PostMapping("/{idUser}")

@@ -13,30 +13,14 @@ import { z } from "zod";
 import axios from "axios";
 import {  useNavigate } from 'react-router-dom';
 
-type User = {
-    name: string;
-    lastname?: string;
-    cpf?: string;
-    email: string;
-    password: string;
-}
+import type { createUser } from "./types/user/usercreate";
+import type { LoginResponse } from "./types/user/loginresponse";
+
 
 const emailSchema = z.email();
 const passwordSchema = z.string().min(6).max(60);
 const nameSchema = z.string().min(3).max(100);
 
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  user?: {
-    id: string;
-    name: string;
-    lastname?: string;
-    email: string;
-    password: string;
-    cpf?: string;
-  };
-}
 
 const Register: React.FC = () => {
     const [name, setUsername] = useState<string>("");
@@ -106,7 +90,6 @@ const Register: React.FC = () => {
         setError("");
     };
 
-
     const handleRedirect = () => {
         navigate('/');
     }
@@ -125,7 +108,7 @@ const Register: React.FC = () => {
 
     try {
         
-        const user: User = {
+        const user: createUser = {
             name,
             lastname,
             cpf,

@@ -3,6 +3,7 @@ package lucca.github.io.todolist.services;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.User;
 import lucca.github.io.todolist.models.EntityDTO.LoginRequest;
+import lucca.github.io.todolist.models.EntityDTO.LoginUserDTO;
 import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,10 @@ public class UserServices {
     public UserDTO createUserDTO(User user){
         return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
 
+    }
+
+    public LoginUserDTO createLoginUserDTO(User user){
+        return new LoginUserDTO(user.getId(), user.getName());
     }
 
     public ResponseEntity<UserDTO> findUserByID(Long id){
@@ -102,37 +107,31 @@ public class UserServices {
     // -----------------------------------------------------------------------------------------------------------------
 
     public ResponseEntity<?> login(LoginRequest user){
-        Optional<User> foundUser = userRepository.findUserByEmail(user.email());
+        Optional<User> foundUserByEmail = userRepository.findUserByEmail(user.email());
 
-        if(foundUser.isEmpty()){
+        if(foundUserByEmail.isEmpty()){
             return ResponseEntity.status(404).body(
                     Map.of(
                             "sucess", false,
-                            "message", "User not found."
+                            "message", "Usuário não encontrado."
                     )
             );
         }
 
+        Optional<User> foundUser = userRepository.findUserByEmailAndPassword(user.email(), user.password());
         if(!foundUser.get().getPassword().equals(user.password()) || !foundUser.get().getEmail().equals(user.email())){
             return ResponseEntity.status(401).body(
                     Map.of(
                             "sucess", false,
-                            "message", "Credentional invalid."
+                            "message", "Credênciais Inválidas."
                     )
             );
         }
 
-        UserDTO userDTO = createUserDTO(foundUser.get());
+        LoginUserDTO userDTO = createLoginUserDTO(foundUser.get());
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Logged in.",
-                "user", Map.of(
-                        "id", userDTO.id(),
-                        "nome", userDTO.name(),
-                        "email", userDTO.email()
-                )
-        ));
+        return ResponseEntity.ok(userDTO);
+
     }
 
     public ResponseEntity<?> findUserByEmail(String email){

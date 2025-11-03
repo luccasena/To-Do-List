@@ -1,5 +1,6 @@
 package lucca.github.io.todolist.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.Description;
 import lucca.github.io.todolist.models.Entity.Label;
@@ -49,14 +50,27 @@ public class TaskServices {
         return ResponseEntity.ok().body(taskDTO);
     }
 
-    public ResponseEntity<List<TaskDTO>> getAllTasks(){
-        List<Task> tasks = taskRepository.findAll();
+    public ResponseEntity<List<TaskDTO>> getAllTasks(Long idUser){
+        List<Task> tasks;
+
+        if(idUser != null){
+            Optional<User> foundUser = userServices.searchUserById(idUser);
+
+            if(foundUser.isEmpty()){
+                throw new EntityNotFoundException("User not found");
+            }
+            tasks = foundUser.get().getTasks();
+
+        }else{
+            tasks = taskRepository.findAll();
+
+        }
 
         if(tasks.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        List<TaskDTO>   taskDTOS = new ArrayList<>();
+        List<TaskDTO>  taskDTOS = new ArrayList<>();
 
         for (Task task: tasks){
             TaskDTO taskDTO = createTaskDTO(task);
