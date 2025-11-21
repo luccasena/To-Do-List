@@ -32,7 +32,6 @@ function TaskItem(TaskItemProps: TaskItemProps) {
     };
 
     const handleOpenModal = (type: "info" | "edit" | "delete") => () => {
-        console.log("abrir modal de", type);
         setOpenModal(type);
     };
     
@@ -67,13 +66,27 @@ function TaskItem(TaskItemProps: TaskItemProps) {
                             edge="start"
                             checked={TaskItemProps.task.done}
                             tabIndex={-1}
-                            disableRipple/>
+                            disableRipple
+                            />
+
                     </ListItemIcon>
                     <ListItemText 
-                        primary={`${TaskItemProps.task.title}`}/>
+                        primary={`${TaskItemProps.task.title}`}
+                        slotProps={
+                            {primary: 
+                                {sx: {
+                                        textDecoration: TaskItemProps.task.done ? "line-through" : "none",
+                                        color: TaskItemProps.task.done ? "text.disabled" : "text.primary",
+                                        textOverflow: "ellipsis",
+                                        overflow: "hidden",
+                                        whiteSpace: "nowrap",
+                                        maxWidth: "200px" // ajuste conforme o layout
+
+                        }}}}
+                    />
                 </ListItemButton>
             </ListItem>
-            <TaskModal task={TaskItemProps.task} openModal={openModal} handleClose={handleClose} userId={TaskItemProps.userId}/>
+            <TaskModal task={TaskItemProps.task} openModal={openModal} handleClose={handleClose} userId={TaskItemProps.userId} labelAvailable={TaskItemProps.labelAvailable}/>
         </>
     );
 }

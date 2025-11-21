@@ -9,16 +9,16 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Login as LoginIcon } from "@mui/icons-material";
-import { z } from "zod";
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import type { Authlog } from "./types/user/authlog";
 import type { User } from "./types/user/user";
 import { realizaLogin } from "./services/usuarioService";
 
+import { validateEmail } from "./schemas/email";
+import { validatePassword } from "./schemas/password";
 
-const emailSchema = z.email();
-const passwordSchema = z.string().min(6).max(60);
+import axios from "axios";
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -29,24 +29,6 @@ const Login: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
-
-  const validateEmail = (email: string) => {
-    if (!email.trim()) return { isValid: false, error: "" };
-    const result = emailSchema.safeParse(email);
-    return {
-      isValid: result.success,
-      error: result.success ? "" : "Email inválido",
-    };
-  };
-
-  const validatePassword = (password: string) => {
-    if (!password) return { isValid: false, error: "" };
-    const result = passwordSchema.safeParse(password);
-    return {
-      isValid: result.success,
-      error: result.success ? "" : "A senha deve ter pelo menos 6 caracteres",
-    };
-  };
 
   const isFormValid =
     validateEmail(email).isValid && validatePassword(password).isValid;
@@ -78,6 +60,7 @@ const Login: React.FC = () => {
       const authlog: Authlog = {
         email,
         password,
+        
       };
 
       // Axios automaticamente trata HTTP 200-299 como sucesso

@@ -10,8 +10,10 @@ import TaskModal from "./components/TaskModal";
 
 import type { Task } from "./types/task/task";
 import type { User } from "./types/user/user";
+import type { Label } from './types/label';
 
 import { getTarefas } from "./services/taskService";
+import { getLabels } from './services/labelService';
 
 const Home: React.FC = () => {
     const location = useLocation();
@@ -19,12 +21,12 @@ const Home: React.FC = () => {
     const [openModal, setOpenModal] = React.useState<"add" | null>(null);
     const [tasks, setTasks] = React.useState<Task[]>([]);
     const [user] = React.useState<User>(location.state?.user);
+    const [labelAvailable, setlabelAvailable] = React.useState<Label[]>([]);
     
     const handleClose = () => setOpenModal(null);
 
     const handleOpenModal = (type: "add") => () => {
         setOpenModal(type);
-
     };
 
     const obterTarefas = async (id: number) => {
@@ -33,12 +35,16 @@ const Home: React.FC = () => {
         
     }
 
+    const fetchLabels = async () => {
+        const response = await getLabels();
+        setlabelAvailable(response);
+    };
+
     useEffect(() => {
         obterTarefas(user.id);
+        fetchLabels();
 
     }, []);
-
-
 
     return(
         <>
@@ -50,15 +56,12 @@ const Home: React.FC = () => {
                 <List dense sx={{ width: '100%', maxWidth: 450}}>
                     <Box className="tasks">
                         <Typography variant="h2" style={{textAlign: "center", fontSize: "25px"}}>Tarefas</Typography>
-                        {tasks.map((value) => {
-                            return (
-                                <>
-                                    <TaskItem key={value.id} task={value} userId={user.id} />
-                                </>
-                            );
-                        })}
+                        
+                        {tasks.map((value) => 
+                               ( <TaskItem key={value.id} task={value} labelAvailable={labelAvailable} userId={user.id}/>)
+                        )}
                     </Box>
-                    <TaskModal openModal={openModal} handleClose={handleClose} />
+                    <TaskModal openModal={openModal} handleClose={handleClose} labelAvailable={labelAvailable} userId={user.id} />
                 </List>
             </Box>
         </>

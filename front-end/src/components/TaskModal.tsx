@@ -1,23 +1,23 @@
 import * as React from 'react';
-import {Box, Typography} from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import { TextField } from '@mui/material';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import {
+  FormControl,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 
-import { getLabels } from '../services/labelService';
-
+import { createTask } from "../services/taskService"
+import { deleteTask } from "../services/taskService"
+import { updateTask } from "../services/taskService"
 
 import type { TaskModalProps } from '../types/task/taskmodalprop';
-import { useEffect } from 'react';
-import type { Label } from '../types/label';
+import type { TaskCreateRequest } from '../types/task/taskcreaterequest';
 
-
-const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, userId }: TaskModalProps) => {
+const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, userId , labelAvailable}: TaskModalProps) => {
     const card_style = {
             display: "flex",
             flexDirection: "column",
@@ -34,20 +34,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, use
             p: 4
     };
 
-    const [idUser, setUserId] = React.useState<number | undefined>();
-    const [labels, setLabels] = React.useState<Label[]>([]);
-
-    const obterLabels = async () => {
-        const labelsResponse = await getLabels();
-        setLabels(labelsResponse);
-        
-    }
-
-
-    useEffect(() => {
-        obterLabels();
-
-    }, []);
+    // Informações que o Usuário vai passar:
+    const [titulo, setTitulo] = React.useState<string>();
+    const [descricao, setDescricao] = React.useState<string>();
+    const [labels, setLabels] = React.useState<number[]>();
+    const [done, setDone] = React.useState<boolean>();
 
     const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -55,23 +46,72 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, use
 
         if (openModal === "add") {
             // Lógica para adicionar a tarefa
-            setUserId(userId);
+            const task: TaskCreateRequest = {
+                title: titulo || "", 
+                description: descricao || "", 
+                done: false, 
+                labelIds: labels || []
+            };
 
+            try{
+                await createTask(task, userId);
+                alert("Tarefa criada com sucesso!");
 
+            }catch{
+                alert("Erro ao criar a tarefa");
+
+            }
         }
+
         else if (openModal === "edit") {
             // Lógica para editar a tarefa
 
+            const updatedTask: TaskCreateRequest = {
+                title: titulo || "", 
+                description: descricao || "", 
+                done: done || false, 
+                labelIds: labels || []
+            };
+            
+            try{      
+                await updateTask(updatedTask, task!.id);
+
+                alert("Tarefa atualizada com sucesso!");
+
+            }catch{
+              alert("Erro ao atualizar a tarefa");
+
+            }
         } 
+
         else if (openModal === "delete") {
             // Lógica para editar a tarefa
 
+            try{
+               await deleteTask(task!.id);
+                alert("Tarefa deletada com sucesso!");
+
+            }catch{
+              alert("Erro ao deletar a tarefa");
+
+            }
         } 
+
       };
+
+    React.useEffect(() => {
+        if (openModal === "edit" && task) {
+            setTitulo(task.title);
+            setDescricao(task.description?.text);
+            setDone(task.done);
+            setLabels(task.labels.map(l => l.id));
+        }
+    },[openModal, task]);
 
     return(
         <Modal open={Boolean(openModal)} onClose={handleClose}>
         <Box component="form" sx={card_style} onSubmit={handleSubmit}>
+
           {openModal === "info" && (
             <>
               <Typography variant="h6"><strong>Título:</strong> {task?.title}</Typography>
@@ -90,27 +130,46 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, use
                         type="titulo"
                         fullWidth
                         margin="normal"
+                        defaultValue={task?.title}
+                        onChange={(e) => setTitulo(e.target.value)}
                     />
                     <TextField
                         label="Descrição"
                         type="descricao"
                         fullWidth
                         margin="normal"
-                    />     
-                    <FormControl>
-                      <FormLabel id="demo-radio-buttons-group-label">Labels</FormLabel>
-                      <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        name="radio-buttons-group"
-                      >
-                        {labels?.map((label) => (
-                          <FormControlLabel key={label.id} value={label.id} control={<Radio />} label={label.name} />
-                        ))}
-                      </RadioGroup>
-                    </FormControl>   
-                </Box>
+                        defaultValue={task?.description?.text}
+                        onChange={(e) => setDescricao(e.target.value)}
+                    />   
+                    <FormControlLabel 
+                        control={
+                          <Checkbox 
+                            checked={done} 
+                            onChange={e => setDone(e.target.checked)} 
+                            />
+                        } 
+                        label="Status" />
 
-              <Button variant="contained" color="primary" onClick={handleClose}>
+                    <FormControl component="fieldset" variant="standard">
+                      <Autocomplete
+                          multiple
+                          disableCloseOnSelect
+                          defaultValue={task?.labels.map(label => label)}
+                          options={labelAvailable}
+                          getOptionLabel={(option) => option.name}
+                          onChange={(_, newValue) => setLabels(newValue.map(label => label.id))}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Labels"
+                              placeholder="Selecione uma ou mais"
+                              sx={{ width: "320px" }}
+                            />
+                          )}
+                        />
+                    </FormControl>
+                  </Box>
+              <Button type="submit" variant="contained" color="primary">
                 Salvar alterações
               </Button>
             </>
@@ -124,7 +183,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, use
                 <Button variant="outlined" onClick={handleClose}>
                   Cancelar
                 </Button>
-                <Button variant="contained" color="error" onClick={() => alert("Tarefa excluída!")}>
+                <Button type="submit" variant="contained" color="error">
                   Excluir
                 </Button>
               </Box>
@@ -132,44 +191,49 @@ const TaskModal: React.FC<TaskModalProps> = ({ task, openModal, handleClose, use
           )}
 
           {openModal === "add" && (
-            <>
+             <>
                 <Typography variant="h5">Adicionar Tarefa tarefa</Typography>
                 <Box>
-                    <TextField
-                        label="Título"
-                        type="titulo"
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Descrição"
-                        type="descricao"
-                        fullWidth
-                        margin="normal"
-                    />    
-                    <FormControl>
-                    <FormLabel id="demo-radio-buttons-group-label">Labels</FormLabel>
-                      <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        defaultValue="female"
-                        name="radio-buttons-group"
-                      >
-                        {labels?.map((label) => (
-                          <FormControlLabel key={label.id} value={label.id} control={<Radio />} label={label.name} />
-                        ))}
-                      </RadioGroup>
-                  </FormControl>    
+                  <TextField
+                      label="Título"
+                      type="titulo"
+                      fullWidth
+                      margin="normal"
+                      onChange={(e) => setTitulo(e.target.value)}
+                  />
+                  <TextField
+                      label="Descrição"
+                      type="descricao"
+                      fullWidth
+                      margin="normal"
+                      onChange={(e) => setDescricao(e.target.value)}
+                  />
+                  <FormControl component="fieldset" variant="standard">
+                    <Autocomplete
+                        multiple
+                        disableCloseOnSelect
+                        options={labelAvailable}
+                        getOptionLabel={(option) => option.name}
+                        onChange={(_, newValue) => setLabels(newValue.map(label => label.id))}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Labels"
+                            placeholder="Selecione uma ou mais"
+                            sx={{ width: "320px" }}
+                          />
+                        )}
+                      />
+                  </FormControl>
                 </Box>
-
-              <Button variant="contained" color="primary" onClick={handleClose}>
-                Adicionar Tarefa
-              </Button>
-            </>
-
+                <Button type="submit" variant="contained" color="primary">
+                  Adicionar Tarefa
+                </Button>
+             </>
           )}
+
         </Box>
       </Modal>
     );
 }
-
 export default TaskModal;
