@@ -7,7 +7,7 @@ O **objetivo principal** é **aprimorar meus conhecimentos em Spring Boot** e co
 
 Além de servir como estudo, o sistema simula uma aplicação real de lista de tarefas, onde cada usuário pode criar, editar e organizar suas atividades com **labels (etiquetas)** personalizadas.  
 
-> 💡 Paralelamente, está sendo desenvolvida uma **aplicação Front-End em React com TypeScript**, que se comunicará com esta API para oferecer uma interface moderna, interativa e responsiva para o usuário final.
+> 💡 Paralelamente, foi desenvolvido uma **aplicação Front-End em React com TypeScript**, que se comunicará com esta API para oferecer uma interface moderna, interativa e responsiva para o usuário final.
 
 ---
 
@@ -51,7 +51,4 @@ Além de servir como estudo, o sistema simula uma aplicação real de lista de t
 
 ---
 
-## 📌 Status do Projeto
-🚧 **Em desenvolvimento** 🚧  
-Tanto o **Back-End (API)** quanto o **Front-End (React)** estão em construção e receberão novas funcionalidades nas próximas versões.
 
