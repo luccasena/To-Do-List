@@ -20,7 +20,7 @@ public class LabelController {
 
     @GetMapping("/{idLabel}")
     public ResponseEntity<?> getLabelById(@PathVariable Long idLabel){
-        return labelServices.findLabelByID(idLabel);
+        return labelServices.getLabel(idLabel);
     }
 
     @GetMapping

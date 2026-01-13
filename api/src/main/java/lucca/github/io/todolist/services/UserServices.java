@@ -8,8 +8,6 @@ import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,33 +20,26 @@ public class UserServices {
 
     private final UserRepository userRepository;
 
-    public Optional<User> searchUserById(Long idUser){
-        return userRepository.findById(idUser);
-    }
-
-    public Optional<User> searchUserByEmail(String email){
-        return userRepository.findByEmail(email);
-    }
     // -----------------------------------------------------------------------------------------------------------------
 
-    public UserDTO createUserDTO(User user){
-        return new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
-
-    }
-
-    public LoginUserDTO createLoginUserDTO(User user){
-        return new LoginUserDTO(user.getId(), user.getName());
-    }
-
-    public ResponseEntity<UserDTO> findUserByID(Long id){
+    public ResponseEntity<UserDTO> getUser(Long id){
         Optional<User> foundUser = userRepository.findById(id);
 
         if(foundUser.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        UserDTO userDTO = createUserDTO(foundUser.get());
+        User user = foundUser.get();
+
+        UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
         return ResponseEntity.ok().body(userDTO);
+    }
+
+    public User getUserOptional(Long id){
+        Optional<User> foundUser = userRepository.findById(id);
+
+        return foundUser.orElse(null);
+
     }
 
     public ResponseEntity<List<UserDTO>> getAllUsers(){
@@ -61,7 +52,7 @@ public class UserServices {
         List<UserDTO> userDTOs = new ArrayList<>();
 
         for(User user : users){
-            UserDTO userDTO = createUserDTO(user);
+            UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
             userDTOs.add(userDTO);
         }
         return ResponseEntity.ok().body(userDTOs);
@@ -69,27 +60,31 @@ public class UserServices {
 
     public ResponseEntity<?> createUser(UserDTO userDTO){
         User user = new User(userDTO.name(), userDTO.lastname(), userDTO.cpf(), userDTO.email(), userDTO.password());
+
         userRepository.save(user);
 
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> deleteUser(Long idUser){
+    public void deleteUser(Long idUser){
+
         Optional<User> user = userRepository.findById(idUser);
 
         if(user.isEmpty()){
-            return ResponseEntity.notFound().build();
+            ResponseEntity.notFound().build();
+            return;
         }
 
         userRepository.deleteById(idUser);
-        return ResponseEntity.ok().build();
+        ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> updateUser(Long idUser, UserDTO userDTO){
+    public void updateUser(Long idUser, UserDTO userDTO){
         Optional<User> foundUser = userRepository.findById(idUser);
 
         if(foundUser.isEmpty()){
-            return ResponseEntity.notFound().build();
+            ResponseEntity.notFound().build();
+            return;
         }
 
         User user = foundUser.get();
@@ -101,25 +96,27 @@ public class UserServices {
         user.setPassword(userDTO.password());
 
         userRepository.save(user);
-        return ResponseEntity.ok().build();
+        ResponseEntity.ok().build();
     }
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    public ResponseEntity<?> login(LoginRequest user){
-        Optional<User> foundUserByEmail = userRepository.findUserByEmail(user.email());
+    public ResponseEntity<?> login(LoginRequest user_request){
 
-        if(foundUserByEmail.isEmpty()){
+        Optional<User> foundUser = userRepository.findUserByEmailAndPassword(user_request.email(), user_request.password());
+
+        if(foundUser.isEmpty()){
             return ResponseEntity.status(404).body(
                     Map.of(
                             "sucess", false,
-                            "message", "Usuário não encontrado."
+                            "message", "E-mail não existe"
                     )
             );
         }
 
-        Optional<User> foundUser = userRepository.findUserByEmailAndPassword(user.email(), user.password());
-        if(!foundUser.get().getPassword().equals(user.password()) || !foundUser.get().getEmail().equals(user.email())){
+        User user = foundUser.get();
+
+        if(!user_request.password().equals(user.getPassword()) && user_request.email().equals(user.getEmail())){
             return ResponseEntity.status(401).body(
                     Map.of(
                             "sucess", false,
@@ -128,20 +125,23 @@ public class UserServices {
             );
         }
 
-        LoginUserDTO userDTO = createLoginUserDTO(foundUser.get());
+        LoginUserDTO userDTO = new LoginUserDTO(user.getId(), user.getName());
 
         return ResponseEntity.ok(userDTO);
 
     }
 
     public ResponseEntity<?> findUserByEmail(String email){
-        Optional<User> foundUser = searchUserByEmail(email);
+        Optional<User> foundUser = userRepository.findByEmail(email);
 
         if(foundUser.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        UserDTO userDTO = createUserDTO(foundUser.get());
+        User user = foundUser.get();
+
+        UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getCpf(), user.getEmail(), user.getPassword(), user.getTasks());
         return ResponseEntity.ok().body(userDTO);
     }
+
 }

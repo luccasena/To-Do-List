@@ -2,7 +2,6 @@ package lucca.github.io.todolist.services;
 
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.Label;
-import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.EntityDTO.LabelDTO;
 import lucca.github.io.todolist.repositories.LabelRepository;
 import org.springframework.http.HttpStatus;
@@ -25,18 +24,16 @@ public class LabelServices {
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    public LabelDTO createLabelDTO(Label label){
-        return new LabelDTO(label.getId(), label.getName(), label.getTasks());
-    }
+    public ResponseEntity<?> getLabel(Long idLabel){
+        Optional<Label> foundlabel = labelRepository.findById(idLabel);
 
-    public ResponseEntity<?> findLabelByID(Long idLabel){
-        Optional<Label> label = labelRepository.findById(idLabel);
-
-        if(label.isEmpty()){
+        if(foundlabel.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        LabelDTO labelDTO = createLabelDTO(label.get());
+        Label label = foundlabel.get();
+
+        LabelDTO labelDTO =  new LabelDTO(label.getId(), label.getName(), label.getTasks());
         return ResponseEntity.ok().body(labelDTO);
     }
 
@@ -50,7 +47,7 @@ public class LabelServices {
         List<LabelDTO> labelDTOs = new ArrayList<>();
 
         for(Label label : labels){
-            LabelDTO labelDTO = createLabelDTO(label);
+            LabelDTO labelDTO =  new LabelDTO(label.getId(), label.getName(), label.getTasks());
             labelDTOs.add(labelDTO);
         }
 

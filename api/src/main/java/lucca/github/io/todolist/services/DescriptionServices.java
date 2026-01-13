@@ -50,11 +50,11 @@ public class DescriptionServices {
 
     }
 
-    public void createDescription(DescriptionDTO descriptionDTO, Task task){
+    public void createDescription(Description description){
 
-        Description description = new Description(descriptionDTO.text(), task);
 
         descriptionRepository.save(description);
+
     }
 
     public void deleteDescription(Long idDescription){

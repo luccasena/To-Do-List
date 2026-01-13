@@ -1,17 +1,14 @@
 package lucca.github.io.todolist.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lucca.github.io.todolist.models.Entity.Description;
 import lucca.github.io.todolist.models.Entity.Label;
 import lucca.github.io.todolist.models.Entity.Task;
 import lucca.github.io.todolist.models.Entity.User;
-import lucca.github.io.todolist.models.EntityDTO.DescriptionDTO;
 import lucca.github.io.todolist.models.EntityDTO.TaskCreateRequest;
 import lucca.github.io.todolist.models.EntityDTO.TaskDTO;
-import lucca.github.io.todolist.repositories.LabelRepository;
+import lucca.github.io.todolist.models.EntityDTO.UserDTO;
 import lucca.github.io.todolist.repositories.TaskRepository;
-import lucca.github.io.todolist.repositories.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,29 +21,22 @@ import java.util.Optional;
 public class TaskServices {
 
     private final TaskRepository taskRepository;
-
     private final UserServices userServices;
-    private final DescriptionServices descriptionServices;
     private final LabelServices labelServices;
-
-    public Optional<Task> searchTaskById(Long idTask){
-        return taskRepository.findById(idTask);
-    }
+    private final DescriptionServices descriptionServices;
 
     // -----------------------------------------------------------------------------------------------------------------
 
-    public TaskDTO createTaskDTO(Task task){
-        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
-    }
-
-    public ResponseEntity<TaskDTO> findTaskByID(Long idTask){
+    public ResponseEntity<TaskDTO> getTask(Long idTask){
         Optional<Task> foundTask = taskRepository.findById(idTask);
 
         if(foundTask.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        TaskDTO taskDTO = createTaskDTO(foundTask.get());
+        Task task = foundTask.get();
+
+        TaskDTO taskDTO = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
         return ResponseEntity.ok().body(taskDTO);
     }
 
@@ -54,12 +44,10 @@ public class TaskServices {
         List<Task> tasks;
 
         if(idUser != null){
-            Optional<User> foundUser = userServices.searchUserById(idUser);
-
-            if(foundUser.isEmpty()){
-                throw new EntityNotFoundException("User not found");
-            }
-            tasks = foundUser.get().getTasks();
+            ResponseEntity<UserDTO> user_response = userServices.getUser(idUser);
+            UserDTO user = user_response.getBody();
+            assert user != null;
+            tasks = user.tasks();
 
         }else{
             tasks = taskRepository.findAll();
@@ -73,7 +61,7 @@ public class TaskServices {
         List<TaskDTO>  taskDTOS = new ArrayList<>();
 
         for (Task task: tasks){
-            TaskDTO taskDTO = createTaskDTO(task);
+            TaskDTO taskDTO = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getDone(), task.getLabels());
             taskDTOS.add(taskDTO);
         }
 
@@ -81,14 +69,7 @@ public class TaskServices {
     }
 
     public ResponseEntity<?> createTask(Long idUser, TaskCreateRequest taskDTO){
-        Optional<User> foundUser = userServices.searchUserById(idUser);
-
-        if(foundUser.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
-        User user = foundUser.get();
-
+        User user = userServices.getUserOptional(idUser);
         List<Label> labels = labelServices.searchAllLabels(taskDTO.labelIds());
 
         if(labels.isEmpty()){
@@ -97,33 +78,34 @@ public class TaskServices {
 
         Task task = new Task(user, taskDTO.title(), taskDTO.done(), labels);
 
-        Description description = new Description();
-
-        description.setText(taskDTO.description());
-        description.setTask(task);
+        Description description = new Description(taskDTO.description(), task);
+        descriptionServices.createDescription(description);
 
         task.setDescription(description);
+
         taskRepository.save(task);
 
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> deleteTask(Long idTask){
+    public void deleteTask(Long idTask){
         Optional<Task> taskOptional = taskRepository.findById(idTask);
 
         if(taskOptional.isEmpty()){
-            return ResponseEntity.notFound().build();
+            ResponseEntity.notFound().build();
+            return;
         }
 
         taskRepository.delete(taskOptional.get());
-        return ResponseEntity.ok().build();
+        ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<?> updateTask(TaskCreateRequest taskDTO, Long id){
+    public void updateTask(TaskCreateRequest taskDTO, Long id){
         Optional<Task> foundTask = taskRepository.findById(id);
 
         if(foundTask.isEmpty()){
-            return ResponseEntity.badRequest().body("No such task");
+            ResponseEntity.badRequest().body("No such task");
+            return;
         }
 
         Task task = foundTask.get();
@@ -134,7 +116,8 @@ public class TaskServices {
         List<Label> labels = labelServices.searchAllLabels(taskDTO.labelIds());
 
         if(labels.isEmpty()){
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.badRequest().build();
+            return;
         }
 
         task.setLabels(labels);
@@ -143,7 +126,7 @@ public class TaskServices {
         task.getDescription().setTask(task);
 
         taskRepository.save(task);
-        return ResponseEntity.ok().build();
+        ResponseEntity.ok().build();
 
     }
 

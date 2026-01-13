@@ -20,7 +20,7 @@ public class UserController {
 
     @GetMapping("/{idUser}")
     public ResponseEntity<?> getUserById(@PathVariable Long idUser) {
-        return userServices.findUserByID(idUser);
+        return userServices.getUser(idUser);
     }
 
     @GetMapping("/informations")
@@ -50,8 +50,6 @@ public class UserController {
         userServices.updateUser(id, userDTO);
         return ResponseEntity.ok().build();
     }
-
-    // ----------------------------------------------------------------------------
 
 
 }
